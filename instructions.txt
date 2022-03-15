@@ -2,3 +2,8 @@ Initial Set Up
 follow: https://flask.palletsprojects.com/en/2.0.x/installation/
 - set up venv
 - activate env using: $ . venv/bin/activate
+- install flask in venv
+
+Initial Routing
+follow: https://flask.palletsprojects.com/en/2.0.x/quickstart/
+- start server with: $ flask run
