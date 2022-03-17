@@ -133,3 +133,7 @@ dmypy.json
 
 # project files
 development.db
+
+# db config
+config/
+*.conf
