@@ -136,3 +136,4 @@ development.db
 
 # db config
 config/
+*.conf
