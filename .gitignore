@@ -131,5 +131,5 @@ dmypy.json
 # Pycharm files
 .idea/
 
-#database
+# project files
 development.db
