@@ -11,20 +11,31 @@ app.config['SQLALCHEMY_DATABASE_URI'] = db_options['sqlite_connection_string']
 db = SQLAlchemy(app)
 
 
-# # model
+# model
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    id = db.Column('id', db.Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
 
-    def __repr__(self):
-        return '<User %r>' % self.username
+    def __init__(self, name: str):
+        self.name = name
+
+
+db.drop_all()
+db.create_all()
 
 # routes
 @app.route("/")
 def hello_world():
-    return render_template('home.html.jinja')
+    return render_template('home.html.jinja', users=User.query.all())
 
 
 if __name__ == '__main__':
+    user = User('Wes')
+    db.session.add(user)
+    db.session.commit()
+    for user in User.query.all():
+        print(f'id: {user.id} name: {user.name}')
     app.run(debug=True)
+
+
+
