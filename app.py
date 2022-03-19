@@ -1,6 +1,5 @@
 from configparser import ConfigParser
-from flask import Flask, jsonify
-from flask import render_template
+from flask import Flask, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -29,22 +28,25 @@ def hello_world():
     return render_template('home.html.jinja')
 
 
-@app.route("/users")
+@app.route("/users", methods=['GET'])
 def users():
     users = get_users()
-    return jsonify([{user.id: user.name} for user in users])
+    data = jsonify([{user.id: user.name} for user in users])
+    return data
 
 
 # services
-def get_users() -> object:
+def get_users():
     return User.query.all()
 
 
 def save_user(user):
     db.session.add(user)
     db.session.commit()
+    return user
 
 
+# test code
 if __name__ == '__main__':
 
     db.drop_all()
