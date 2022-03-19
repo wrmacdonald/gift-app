@@ -2,7 +2,7 @@ Initial Set Up
 follow: https://flask.palletsprojects.com/en/2.0.x/installation/
 - set up venv (go to PyCharm Interpreter settings or run below command in terminal in gift-app)
     virtualenv venv
-- make sure giftapp is set as the source folder in IDE
+- make sure gift_app is set as the source folder in IDE
 - check if sqlite is installed by running
     sqlite3 --version
 - if it says 'not found', then download and install from https://www.sqlite.org/download.html
