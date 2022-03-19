@@ -9,6 +9,7 @@ config = ConfigParser()
 config.read('config/configuration.conf')
 db_options = dict(config['DATABASE'])
 app.config['SQLALCHEMY_DATABASE_URI'] = db_options['sqlite_connection_string']
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
@@ -39,14 +40,20 @@ def get_users() -> object:
     return User.query.all()
 
 
+def save_user(user):
+    db.session.add(user)
+    db.session.commit()
+
+
 if __name__ == '__main__':
 
     db.drop_all()
     db.create_all()
 
-    user = User('Wes')
-    db.session.add(user)
-    db.session.commit()
+    matt = User('Matt')
+    wes = User('Wes')
+    save_user(matt)
+    save_user(wes)
     
     app.run(debug=True)
 
