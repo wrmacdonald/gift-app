@@ -1,9 +1,20 @@
 Initial Set Up
 follow: https://flask.palletsprojects.com/en/2.0.x/installation/
-- set up venv
-- activate env using: $ . venv/bin/activate
-- install flask in venv
+- set up venv (go to PyCharm Interpreter settings or run below command in terminal in gift-app)
+    virtualenv venv
+- make sure giftapp is set as the source folder in IDE
+- check if sqlite is installed by running
+    sqlite3 --version
+- if it says 'not found', then download and install from https://www.sqlite.org/download.html
+open terminal inside gift-app directory
+- run in terminal only the first time after downloading to ensure scripts have execute permissions
+    chmod 755 start.sh
+    chmod 755 create_db.sh
 
 Initial Routing
 follow: https://flask.palletsprojects.com/en/2.0.x/quickstart/
 - start server with: $ flask run
+
+Start Server
+- open terminal in gift-app and run command (creates database, installs dependencies, inserts test data and runs app)
+    ./start.sh

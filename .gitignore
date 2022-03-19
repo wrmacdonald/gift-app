@@ -132,7 +132,7 @@ dmypy.json
 .idea/
 
 # project files
-development.db
+database/development.db
 
 # db config
 config/
