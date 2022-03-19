@@ -1,17 +1,19 @@
-import configparser
-from flask import Flask
+from configparser import ConfigParser
+from flask import Flask, jsonify
 from flask import render_template
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-config = configparser.ConfigParser()
+
+config = ConfigParser()
 config.read('config/configuration.conf')
 db_options = dict(config['DATABASE'])
 app.config['SQLALCHEMY_DATABASE_URI'] = db_options['sqlite_connection_string']
+
 db = SQLAlchemy(app)
 
 
-# model
+# models
 class User(db.Model):
     id = db.Column('id', db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
@@ -20,21 +22,32 @@ class User(db.Model):
         self.name = name
 
 
-db.drop_all()
-db.create_all()
-
 # routes
 @app.route("/")
 def hello_world():
-    return render_template('home.html.jinja', users=User.query.all())
+    return render_template('home.html.jinja')
+
+
+@app.route("/users")
+def users():
+    users = get_users()
+    return jsonify([{user.id: user.name} for user in users])
+
+
+# services
+def get_users() -> object:
+    return User.query.all()
 
 
 if __name__ == '__main__':
+
+    db.drop_all()
+    db.create_all()
+
     user = User('Wes')
     db.session.add(user)
     db.session.commit()
-    for user in User.query.all():
-        print(f'id: {user.id} name: {user.name}')
+    
     app.run(debug=True)
 
 
