@@ -1,22 +1,15 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask
+from flask_restful import Api
 from database.database import init_db
 from database.models import User
 from services import UserService
+from resources import HelloWorld, UserResource
 
 app = Flask(__name__)
+api = Api(app)
 
-
-@app.route("/")
-def hello_world():
-    return render_template('home.html.jinja')
-
-
-@app.route("/users", methods=['GET'])
-def users():
-    users = UserService.get_users()
-    data = jsonify([{user.id: user.name} for user in users])
-    return data
-
+api.add_resource(HelloWorld, '/')
+api.add_resource(UserResource, '/user')
 
 if __name__ == '__main__':
 
