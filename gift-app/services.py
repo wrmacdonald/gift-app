@@ -12,3 +12,6 @@ class UserService:
         db_session.add(user)
         db_session.commit()
         return user
+
+
+
