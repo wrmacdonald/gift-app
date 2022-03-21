@@ -18,7 +18,7 @@ class Home(Resource):
 class UserResource(Resource):
 
     @staticmethod
-    def get(id):
+    def get(id: int):
         """gets user with id"""
 
         try:
@@ -30,6 +30,24 @@ class UserResource(Resource):
 
         except:
             abort(500, message='Internal Server Error')
+
+    @staticmethod
+    def put(id: int):
+        """updates any number of field on user record with id"""
+
+        try:
+            if UserService.user_exists(id):
+                user_put_args = reqparse.RequestParser()
+                user_put_args.add_argument('name', type=str, help='name of the user', required=True)
+                args = user_put_args.parse_args()
+
+                user = UserService.update_user(id, args)
+                return user.serialize(), 200
+        except:
+            abort(500, message='Internal Server Error')
+
+        abort(404, message=f'User with id {id} does not exist')
+
 
 class UsersResource(Resource):
     @staticmethod
