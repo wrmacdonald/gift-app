@@ -19,7 +19,13 @@ class UserResource(Resource):
 
     @staticmethod
     def get(id: int):
-        """gets user with id"""
+        """
+        gets User with user_id matching id
+        params: id:int from url path
+        returns
+        - Success: 200 and serialized User
+        - Exception: 500
+        """
 
         try:
             user = UserService.get_user(id)
@@ -33,7 +39,16 @@ class UserResource(Resource):
 
     @staticmethod
     def put(id: int):
-        """updates any number of field on user record with id"""
+        """
+        updates any number of field on user record with user_id of id
+        params:
+        - id:int from url path
+        - name:str from request body
+        returns
+        - Success: 200 and serialized updated User
+        - Id doesn't exist in database: 404
+        - Exception: 500
+        """
 
         try:
             if UserService.user_exists(id):
@@ -52,7 +67,13 @@ class UserResource(Resource):
 class UsersResource(Resource):
     @staticmethod
     def get():
-        """gets all users"""
+        """
+        gets all Users from database
+        returns
+        - success: 200 and list of all serialized Users
+        - no users in database: 204
+        - Exception: 500
+        """
 
         try:
             users = UserService.get_users()
@@ -65,7 +86,14 @@ class UsersResource(Resource):
 
     @staticmethod
     def post():
-        """creates new record with name and return entire user in json"""
+        """
+        creates new record with name and return entire serialized User
+        params:
+        - name:str from request body
+        returns:
+        - success: 201 and serialized User
+        - failure: 500
+        """
 
         try:
             user_post_args = reqparse.RequestParser()
@@ -81,7 +109,13 @@ class UsersResource(Resource):
 
     @staticmethod
     def delete():
-        """deletes user record with id"""
+        """
+        deletes User with id
+        params: id:int from request body
+        returns:
+        - success: 204
+        - failure: 500
+        """
 
         try:
             user_delete_args = reqparse.RequestParser()
