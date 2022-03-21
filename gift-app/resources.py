@@ -1,4 +1,4 @@
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, abort
 from services import UserService
 from database.models import User
 import utils
@@ -16,6 +16,10 @@ class UserResource(Resource):
         """gets user with id"""
 
         user = UserService.get_user(id)
+
+        if not user:
+            abort(404, message=f'User with id {id} does not exist')
+
         return user.serialize(), 200
 
 
@@ -25,6 +29,9 @@ class UsersResource(Resource):
         """gets all users"""
 
         users = UserService.get_users()
+        if len(users) == 0:
+            return 'no users found', 204
+
         return utils.serialize_list(users), 200
 
     @staticmethod
