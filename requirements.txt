@@ -8,6 +8,7 @@ greenlet==1.1.2
 itsdangerous==2.1.1
 Jinja2==3.0.3
 MarkupSafe==2.1.1
+python-dotenv==0.19.2
 permissive-dict==1.0.4
 pytz==2022.1
 six==1.16.0
