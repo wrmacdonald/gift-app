@@ -138,3 +138,4 @@ database/development.db
 config/
 *.conf
 gift-app/.DS_Store
+*.conf
