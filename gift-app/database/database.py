@@ -7,11 +7,7 @@ import os
 
 config = ConfigParser()
 config.read('config/configuration.conf')
-# db_options = dict(config['DATABASE'])
-# engine = create_engine(db_options['sqlite_connection_string'])
-# engine = create_engine("sqlite:////Users/wesmacdonald/Desktop/Coding/gift-app/database/development.db")
 
-# get .env working
 load_dotenv()
 DB_HOST = os.getenv("DB_HOST")
 engine = create_engine(DB_HOST)
