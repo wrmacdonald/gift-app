@@ -4,6 +4,9 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from dotenv import load_dotenv
 import os
+import logging
+
+log = logging.getLogger(__name__)
 
 config = ConfigParser()
 config.read('config/configuration.conf')

@@ -3,6 +3,9 @@ from flask_restful import Resource, reqparse, abort
 from services import UserService
 from database.models import User
 import utils
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class Home(Resource):
@@ -32,7 +35,7 @@ class UserResource(Resource):
 
             if not user:
                 abort(404, message=f'User with id {id} does not exist')
-            return user.serialize(), 200
+            return user.to_dict(), 200
 
         except:
             abort(500, message='Internal Server Error')
@@ -57,7 +60,7 @@ class UserResource(Resource):
                 args = user_put_args.parse_args()
 
                 user = UserService.update_user(id, args)
-                return user.serialize(), 200
+                return user.to_dict(), 200
         except:
             abort(500, message='Internal Server Error')
 
@@ -79,7 +82,7 @@ class UsersResource(Resource):
             users = UserService.get_users()
             if len(users) == 0:
                 return 'no users found', 204
-            return utils.serialize_list(users), 200
+            return [user.to_dict() for user in users], 200
 
         except:
             abort(500, message='Internal Server Error')
@@ -102,7 +105,7 @@ class UsersResource(Resource):
 
             user = User(name=args.name)
             UserService.save_user(user)
-            return user.serialize(), 201
+            return user.to_dict(), 201
 
         except:
             abort(500, message='Internal Server Error')
