@@ -1,5 +1,8 @@
 from database.database import session
 from database.models import User
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class UserService:
@@ -11,11 +14,13 @@ class UserService:
         id:int user_id of user to retrieve
         returns User
         """
+        log.debug(f'fetching user with id {id} users from database')
         return session.query(User).filter_by(user_id=id).first()
 
     @staticmethod
     def get_users() -> list:
         """returns list of every user in database"""
+        log.debug(f'fetching all users from the database')
         return User.query.all()
 
     @staticmethod
@@ -25,6 +30,7 @@ class UserService:
         user:User - user to save
         returns User that was saved
         """
+        log.debug(f'saving new user with id {user.id} to the database')
         session.add(user)
         session.commit()
         return user
@@ -40,10 +46,13 @@ class UserService:
         """
         user = UserService.get_user(id)
 
+        log.debug(f'updating user {id}')
         if args.name:
             user.name = args.name
             session.add(user)
             session.commit()
+        else:
+            log.info(f'user {id} does not have a name, updated anyway')
 
         return user
 
@@ -62,6 +71,7 @@ class UserService:
         deletes user record from database
         id:int - user_id of User to delete
         """
+        log.info(f'deleting user {id}')
         user = UserService.get_user(id)
         session.delete(user)
         session.commit()
