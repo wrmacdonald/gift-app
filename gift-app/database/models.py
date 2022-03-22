@@ -1,5 +1,8 @@
 from sqlalchemy import Column, Integer, String
 from database.database import Base
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class User(Base):
