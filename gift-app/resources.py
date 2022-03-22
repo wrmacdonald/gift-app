@@ -2,6 +2,10 @@ from flask import render_template
 from flask_restful import Resource, reqparse, abort
 from services import UserService
 from database.models import User
+import utils
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class Home(Resource):
