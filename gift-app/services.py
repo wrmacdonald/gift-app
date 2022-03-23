@@ -30,7 +30,7 @@ class UserService:
         user:User - user to save
         returns User that was saved
         """
-        log.debug(f'saving new user with id {user.id} to the database')
+        log.debug(f'saving new user with id {user.user_id} to the database')
         session.add(user)
         session.commit()
         return user
