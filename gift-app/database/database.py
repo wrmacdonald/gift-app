@@ -8,12 +8,16 @@ import logging
 
 log = logging.getLogger(__name__)
 
-config = ConfigParser()
-config.read('config/configuration.conf')
+# config = ConfigParser()
+# config.read('config/configuration.conf')
 
 load_dotenv()
-DB_HOST = os.getenv("DB_HOST")
-engine = create_engine(DB_HOST)
+# DB_HOST = os.getenv("DB_HOST")
+# engine = create_engine(DB_HOST)
+
+# connect to mySQL server
+DB_HOST2 = os.getenv("DB_HOST2")
+engine = create_engine(DB_HOST2)
 
 session = scoped_session(sessionmaker(autocommit=False,
                                       autoflush=False,
