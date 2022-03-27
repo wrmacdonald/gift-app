@@ -1,4 +1,3 @@
-from configparser import ConfigParser
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -7,9 +6,6 @@ import os
 import logging
 
 log = logging.getLogger(__name__)
-
-config = ConfigParser()
-config.read('config/configuration.conf')
 
 load_dotenv()
 DB_HOST = os.getenv("DB_HOST")
