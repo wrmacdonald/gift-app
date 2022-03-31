@@ -1,7 +1,7 @@
 from flask import render_template
 from flask_restful import Resource, reqparse, abort
-from services import UserService
-from database.models import User
+from database.models.user import User
+from database.models.base_model import DatabaseConnectionException
 import logging
 
 log = logging.getLogger(__name__)
@@ -10,11 +10,7 @@ log = logging.getLogger(__name__)
 class Home(Resource):
     @staticmethod
     def get():
-        try:
-            return render_template('home.html.jinja')
-
-        except:
-            abort(500, message='Internal Server Error')
+        return render_template('home.html.jinja')
 
 
 class UserResource(Resource):
@@ -26,18 +22,22 @@ class UserResource(Resource):
         params: id:int from url path
         returns
         - Success: 200 and serialized User
+        - no such user exists: 404
         - Exception: 500
         """
-
         try:
-            user = UserService.get_user(id)
+            if not User.exists(id):
+                return {'message': f'User with id {id} does not exist'}, 404
+
+            user = User.get(id)
 
             if not user:
                 abort(404, message=f'User with id {id} does not exist')
+
             return user.to_dict(), 200
 
-        except:
-            abort(500, message='Internal Server Error')
+        except DatabaseConnectionException:
+            abort(500, message='Internal Service Error')
 
     @staticmethod
     def put(id: int):
@@ -50,22 +50,27 @@ class UserResource(Resource):
         returns
         - Success: 200 and serialized updated User
         - Id doesn't exist in database: 404
-        - Exception: 500
         """
-
         try:
-            if UserService.user_exists(id):
-                user_put_args = reqparse.RequestParser()
-                user_put_args.add_argument('name', type=str, help='name of the user', required=True)
-                user_put_args.add_argument('last_name', type=str, help='last name of the user', required=True)
-                args = user_put_args.parse_args()
+            # if UserService.user_exists(id):
+            #     user_put_args = reqparse.RequestParser()
+            #     user_put_args.add_argument('name', type=str, help='name of the user', required=True)
+            #     user_put_args.add_argument('last_name', type=str, help='last name of the user', required=True)
+            #     args = user_put_args.parse_args()
+            
+            if not User.exists(id):
+                return {'message': f'User with id {id} does not exist'}, 404
 
-                user = UserService.update_user(id, args)
-                return user.to_dict(), 200
-        except:
-            abort(500, message='Internal Server Error')
+            user_put_args = reqparse.RequestParser()
+            user_put_args.add_argument('name', type=str, help='name of the user is required', required=True)
 
-        abort(404, message=f'User with id {id} does not exist')
+            args = user_put_args.parse_args()
+            user = User.update(id, **args)
+
+            return user.to_dict(), 200
+
+        except DatabaseConnectionException:
+            abort(500, message='Internal Service Error')
 
 
 class UsersResource(Resource):
@@ -76,17 +81,17 @@ class UsersResource(Resource):
         returns
         - success: 200 and list of all serialized Users
         - no users in database: 204
-        - Exception: 500
         """
 
         try:
-            users = UserService.get_users()
+            users = User.get_all()
             if len(users) == 0:
                 return 'no users found', 204
+
             return [user.to_dict() for user in users], 200
 
-        except:
-            abort(500, message='Internal Server Error')
+        except DatabaseConnectionException:
+            abort(500, message='Internal Service Error')
 
     @staticmethod
     def post():
@@ -97,21 +102,20 @@ class UsersResource(Resource):
         - last_name:str from request body
         returns:
         - success: 201 and serialized User
-        - failure: 500
         """
 
         try:
             user_post_args = reqparse.RequestParser()
-            user_post_args.add_argument('name', type=str, help='name of the user', required=True)
+            user_post_args.add_argument('name', type=str, help='name of the user is required', required=True)
             user_post_args.add_argument('last_name', type=str, help='last name of the user', required=True)
             args = user_post_args.parse_args()
 
-            user = User(name=args.name, last_name=args.last_name)
-            UserService.save_user(user)
+            id = User.create(name=args.name, last_name=args.last_name)
+            user = User.get(id)
             return user.to_dict(), 201
 
-        except:
-            abort(500, message='Internal Server Error')
+        except DatabaseConnectionException:
+            abort(500, message='Internal Service Error')
 
     @staticmethod
     def delete():
@@ -119,19 +123,26 @@ class UsersResource(Resource):
         deletes User with id
         params: id:int from request body
         returns:
+        - user does not exist: 404
         - success: 204
-        - failure: 500
         """
 
         try:
             user_delete_args = reqparse.RequestParser()
-            user_delete_args.add_argument('id', type=int, help='id of the user', required=True)
+            user_delete_args.add_argument('id', type=int, help='id of the user is required', required=True)
             args = user_delete_args.parse_args()
 
-            UserService.delete_user(args.id)
+            if not User.exists(args.id):
+                return {'message': f'User with id {args.id} does not exist'}, 404
+
+            user = User.get(args.id)
+            user.delete()
+
             return 'Success', 204
 
-        except:
-            abort(500, message='Internal Server Error')
+        except DatabaseConnectionException:
+            abort(500, message='Internal Service Error')
+
+
 
 
