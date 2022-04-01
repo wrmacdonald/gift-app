@@ -52,17 +52,12 @@ class UserResource(Resource):
         - Id doesn't exist in database: 404
         """
         try:
-            # if UserService.user_exists(id):
-            #     user_put_args = reqparse.RequestParser()
-            #     user_put_args.add_argument('name', type=str, help='name of the user', required=True)
-            #     user_put_args.add_argument('last_name', type=str, help='last name of the user', required=True)
-            #     args = user_put_args.parse_args()
-            
             if not User.exists(id):
                 return {'message': f'User with id {id} does not exist'}, 404
 
             user_put_args = reqparse.RequestParser()
             user_put_args.add_argument('name', type=str, help='name of the user is required', required=True)
+            user_put_args.add_argument('last_name', type=str, help='last name of the user', required=True)
 
             args = user_put_args.parse_args()
             user = User.update(id, **args)
