@@ -1,6 +1,6 @@
 from flask import render_template
 from flask_restful import Resource, reqparse, abort
-from database.models.user import User
+from database.models.user import User, Item
 from database.models.base_model import DatabaseConnectionException
 import logging
 
@@ -137,6 +137,40 @@ class UsersResource(Resource):
 
         except DatabaseConnectionException:
             abort(500, message='Internal Service Error')
+#
+# class ListResource(Resource):
+#     @staticmethod
+#     def post(user_id:int):
+#         try:
+#             user_post_args = reqparse.RequestParser()
+#             user_post_args.add_argument('name', type=str, help='name of the list is required', required=True)
+#             args = user_post_args.parse_args()
+#
+#             id = User.create(name=args.name, last_name=args.last_name)
+#             user = User.get(id)
+#             return user.to_dict(), 201
+#
+#         except DatabaseConnectionException:
+#             abort(500, message='Internal Service Error')
+
+
+class ItemResource(Resource):
+    @staticmethod
+    def post(user_id):
+        # create item associated with user_id with name
+        try:
+            item_post_args = reqparse.RequestParser()
+            item_post_args.add_argument('name', type=str, help='name of the item is required', required=True)
+            args = item_post_args.parse_args()
+
+            item_id = Item.create(name=args.name, user_id=user_id)
+            item = Item.get(item_id)
+            return item.to_dict(), 201
+
+        except DatabaseConnectionException:
+            abort(500, message='Internal Service Error')
+
+
 
 
 
