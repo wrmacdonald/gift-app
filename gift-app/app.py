@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from database.database import init_db, drop_db
-from resources import Home, UsersResource, UserResource, ItemResource
+from resources import Home, UsersResource, UserResource, ItemResource, GroupResource
 import logging
 import os
 
@@ -13,10 +13,11 @@ api.add_resource(UsersResource, '/users')
 api.add_resource(UserResource, '/users/<id>')
 # api.add_resource(ListResource, 'users/<id>/lists')
 api.add_resource(ItemResource, '/users/<user_id>/items')
+api.add_resource(GroupResource, '/users/<user_id>/groups')
 
 
 def main():
-    #drop_db()
+    drop_db()
     init_db()
     app.run(debug=True)
 

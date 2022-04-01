@@ -1,6 +1,6 @@
 from flask import render_template
 from flask_restful import Resource, reqparse, abort
-from database.models.user import User, Item
+from database.models.user import User, Item, Group, UserGroup
 from database.models.base_model import DatabaseConnectionException
 import logging
 
@@ -171,6 +171,21 @@ class ItemResource(Resource):
             abort(500, message='Internal Service Error')
 
 
+class GroupResource(Resource):
+    @staticmethod
+    def post(user_id):
+        # create group associated with group_id with name
+        try:
+            group_post_args = reqparse.RequestParser()
+            group_post_args.add_argument('name', type=str, help='name of the group is required', required=True)
+            args = group_post_args.parse_args()
+
+            group_id = Group.create(name=args.name)
+            group = Group.get(group_id)
+            return group.to_dict(), 201
+
+        except DatabaseConnectionException:
+            abort(500, message='Internal Service Error')
 
 
 
