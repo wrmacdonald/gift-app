@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restful import Api
-from database.database import init_db
+from database.database import init_db, drop_db
 from resources import Home, UsersResource, UserResource
 import logging
 import os
@@ -14,6 +14,7 @@ api.add_resource(UserResource, '/users/<id>')
 
 
 def main():
+    # drop_db()
     init_db()
     app.run(debug=True)
 

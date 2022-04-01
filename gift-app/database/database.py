@@ -8,8 +8,13 @@ import logging
 log = logging.getLogger(__name__)
 
 load_dotenv()
-DB_HOST = os.getenv("DB_HOST")
-engine = create_engine(DB_HOST)
+# DB_HOST = os.getenv("DB_HOST")
+# engine = create_engine(DB_HOST)
+
+# connect to mySQL server
+DB_HOST2 = os.getenv("DB_HOST2")
+engine = create_engine(DB_HOST2)
+
 
 session = scoped_session(sessionmaker(autocommit=False,
                                       autoflush=False,
@@ -17,6 +22,15 @@ session = scoped_session(sessionmaker(autocommit=False,
 Base = declarative_base()
 Base.query = session.query_property()
 
+# create table
+# print(Base.metadata.tables.values())
+# Base.metadata.drop_all(engine)
+# Base.metadata.create_all(engine)
+
 
 def init_db():
     Base.metadata.create_all(bind=engine)
+
+
+def drop_db():
+    Base.metadata.drop_all(bind=engine)

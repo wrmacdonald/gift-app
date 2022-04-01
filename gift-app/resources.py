@@ -46,6 +46,7 @@ class UserResource(Resource):
         params:
         - id:int from url path
         - name:str from request body
+        - last_name:str from request body
         returns
         - Success: 200 and serialized updated User
         - Id doesn't exist in database: 404
@@ -56,6 +57,7 @@ class UserResource(Resource):
 
             user_put_args = reqparse.RequestParser()
             user_put_args.add_argument('name', type=str, help='name of the user is required', required=True)
+            user_put_args.add_argument('last_name', type=str, help='last name of the user', required=True)
 
             args = user_put_args.parse_args()
             user = User.update(id, **args)
@@ -92,6 +94,7 @@ class UsersResource(Resource):
         creates new record with name and return entire serialized User
         params:
         - name:str from request body
+        - last_name:str from request body
         returns:
         - success: 201 and serialized User
         """
@@ -99,11 +102,11 @@ class UsersResource(Resource):
         try:
             user_post_args = reqparse.RequestParser()
             user_post_args.add_argument('name', type=str, help='name of the user is required', required=True)
+            user_post_args.add_argument('last_name', type=str, help='last name of the user', required=True)
             args = user_post_args.parse_args()
 
-            id = User.create(name=args.name)
+            id = User.create(name=args.name, last_name=args.last_name)
             user = User.get(id)
-
             return user.to_dict(), 201
 
         except DatabaseConnectionException:

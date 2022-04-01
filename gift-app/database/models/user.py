@@ -11,9 +11,11 @@ class User(Base, SerializerMixin, BaseModel):
     __tablename__ = 'user'
     id = Column('id', Integer, primary_key=True)
     name = Column(String(80), nullable=False)
+    last_name = Column(String(254), nullable=True)
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, last_name: str):
         self.name = name
+        self.last_name = last_name
 
 
 
