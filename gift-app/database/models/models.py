@@ -1,9 +1,9 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Table
+import logging
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.orm import relationship
 from database.database import Base
 from database.models.base_model import BaseModel
-import logging
 
 log = logging.getLogger(__name__)
 
@@ -41,15 +41,22 @@ class UserGroup(Base, SerializerMixin, BaseModel):
 class List(Base, SerializerMixin, BaseModel):
     __tablename__ = 'list'
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    owned_by_user = Column(Integer, ForeignKey('user.id'), nullable=False)
     name = Column(String(254))
 
 
 class Item(Base, SerializerMixin, BaseModel):
     __tablename__ = 'item'
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    owned_by_user = Column(Integer, ForeignKey('user.id'), nullable=False)
     name = Column(String(254))
 
-
+#
+# class ListItem(Base, SerializerMixin, BaseModel):
+#     __tablename__ = 'list_item'
+#     id = Column(Integer, primary_key=True)
+#     list_id = Column(Integer, ForeignKey('lsit.id'), primary_key=True)
+#     item_id = Column(Integer, ForeignKey('item.id'), primary_key=True)
+#
+#
 
