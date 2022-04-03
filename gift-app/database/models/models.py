@@ -18,10 +18,10 @@ class User(Base, SerializerMixin, BaseModel):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(80))
-    last_name = Column(String(254))
+    last_name = Column(String(80))
     lists = relationship('List')
     items = relationship('Item')
-    groups = relationship('Group', secondary='user_group')
+    groups = relationship('Group', secondary='user_group', back_populates="users")
 
 
 class Group(Base, SerializerMixin, BaseModel):
@@ -29,7 +29,7 @@ class Group(Base, SerializerMixin, BaseModel):
     id = Column(Integer, primary_key=True)
     name = Column(String(80))
     owned_by_user = Column(Integer, ForeignKey('user.id'), nullable=False)
-    users = relationship(User, secondary='user_group')
+    users = relationship(User, secondary='user_group', back_populates="groups")
 
 
 class UserGroup(Base, SerializerMixin, BaseModel):
