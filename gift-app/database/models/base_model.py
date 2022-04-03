@@ -63,6 +63,7 @@ class BaseModel:
         gets instance of object with id
         assigns all variables in kwargs to it that match attributes of the object
         and save updated object to database
+        return User that was saved
         """
         try:
 
