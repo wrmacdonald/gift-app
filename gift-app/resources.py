@@ -1,6 +1,6 @@
 from flask import render_template
 from flask_restful import Resource, reqparse, abort
-from database.models.user import User, Item
+from database.models.models import User, Item, Group
 from database.models.base_model import DatabaseConnectionException
 import logging
 
@@ -85,7 +85,7 @@ class UsersResource(Resource):
 
             return [user.to_dict() for user in users], 200
 
-        except DatabaseConnectionException:
+        except DatabaseConnectionException as ex:
             abort(500, message='Internal Service Error')
 
     @staticmethod
@@ -137,21 +137,22 @@ class UsersResource(Resource):
 
         except DatabaseConnectionException:
             abort(500, message='Internal Service Error')
-#
-# class ListResource(Resource):
-#     @staticmethod
-#     def post(user_id:int):
-#         try:
-#             user_post_args = reqparse.RequestParser()
-#             user_post_args.add_argument('name', type=str, help='name of the list is required', required=True)
-#             args = user_post_args.parse_args()
-#
-#             id = User.create(name=args.name, last_name=args.last_name)
-#             user = User.get(id)
-#             return user.to_dict(), 201
-#
-#         except DatabaseConnectionException:
-#             abort(500, message='Internal Service Error')
+
+
+class ListResource(Resource):
+    @staticmethod
+    def post(user_id:int):
+        try:
+            user_post_args = reqparse.RequestParser()
+            user_post_args.add_argument('name', type=str, help='name of the list is required', required=True)
+            args = user_post_args.parse_args()
+
+            id = User.create(name=args.name, last_name=args.last_name)
+            user = User.get(id)
+            return user.to_dict(), 201
+
+        except DatabaseConnectionException:
+            abort(500, message='Internal Service Error')
 
 
 class ItemResource(Resource):
@@ -169,6 +170,29 @@ class ItemResource(Resource):
 
         except DatabaseConnectionException:
             abort(500, message='Internal Service Error')
+
+
+class GroupResource(Resource):
+    @staticmethod
+    def post(user_id):
+        try:
+            group_post_args = reqparse.RequestParser()
+            group_post_args.add_argument('name', type=str, help='name of the group is required', required=True)
+            args = group_post_args.parse_args()
+
+            group_id = Group.create(name=args.name, owned_by_user=user_id)
+
+            owner = User.get(user_id)
+            group = Group.get(group_id)
+            owner.groups.append(group)
+            owner.save()
+
+            return group.to_dict(), 201
+
+        except DatabaseConnectionException:
+            abort(500, message='Internal Service Error')
+
+
 
 
 
