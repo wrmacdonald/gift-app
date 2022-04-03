@@ -3,7 +3,6 @@ from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.orm import relationship
 from database.database import Base
 from database.models.base_model import BaseModel
-from database.database import session
 import logging
 
 log = logging.getLogger(__name__)
@@ -31,27 +30,6 @@ class Group(Base, SerializerMixin, BaseModel):
     name = Column(String(80))
     owned_by_user = Column(Integer, ForeignKey('user.id'), nullable=False)
     users = relationship(User, secondary='user_group')
-
-    # @classmethod
-    # def create(cls, **kwargs):
-    #     # group_id = Group.create(name=kwargs.name, owned_by_user=kwargs.user_id)
-    #     group = Group(name=kwargs.name, owned_by_user=kwargs.owned_by_user)
-    #     log.debug(f'saving new group with id {group.id} to the database')
-    #     group.save()
-    #
-    #     owner = User.get(kwargs.owned_by_user)
-    #     group = Group.get(group.id)
-    #     owner.groups.append(group)
-    #     session.add(owner)
-    #     session.commit()
-    #     return group.id
-    # #     id = super().create(kwargs)
-    # #     # group = Group.get(id=id)
-    # #     # owner = User.get(group.owned_by_user)
-    # #     # owner.groups.append(group)
-    # #     # session.add(owner)
-    # #     # session.commit()
-    # #     return id
 
 
 class UserGroup(Base, SerializerMixin, BaseModel):
