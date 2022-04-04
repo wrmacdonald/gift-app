@@ -17,8 +17,8 @@ class User(Base, SerializerMixin, BaseModel):
                       'items.id', 'items.name')
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(80))
-    last_name = Column(String(80))
+    name = Column(String(254))
+    last_name = Column(String(254))
     lists = relationship('List')
     items = relationship('Item')
     groups = relationship('Group', secondary='user_group', back_populates="users")
@@ -27,15 +27,15 @@ class User(Base, SerializerMixin, BaseModel):
 class Group(Base, SerializerMixin, BaseModel):
     __tablename__ = 'group'
     id = Column(Integer, primary_key=True)
-    name = Column(String(80))
+    name = Column(String(254))
     owned_by_user = Column(Integer, ForeignKey('user.id'), nullable=False)
     users = relationship(User, secondary='user_group', back_populates="groups")
 
 
 class UserGroup(Base, SerializerMixin, BaseModel):
-   __tablename__ = 'user_group'
-   user_id = Column(Integer, ForeignKey('user.id'), primary_key=True)
-   group_id = Column(Integer, ForeignKey('group.id'), primary_key=True)
+    __tablename__ = 'user_group'
+    user_id = Column(Integer, ForeignKey('user.id'), primary_key=True)
+    group_id = Column(Integer, ForeignKey('group.id'), primary_key=True)
 
 
 class List(Base, SerializerMixin, BaseModel):
@@ -43,6 +43,7 @@ class List(Base, SerializerMixin, BaseModel):
     id = Column(Integer, primary_key=True)
     owned_by_user = Column(Integer, ForeignKey('user.id'), nullable=False)
     name = Column(String(254))
+    items = relationship('Item', secondary='list_item', back_populates="lists")
 
 
 class Item(Base, SerializerMixin, BaseModel):
@@ -50,13 +51,13 @@ class Item(Base, SerializerMixin, BaseModel):
     id = Column(Integer, primary_key=True)
     owned_by_user = Column(Integer, ForeignKey('user.id'), nullable=False)
     name = Column(String(254))
+    lists = relationship(List, secondary='list_item', back_populates="items")
 
-#
-# class ListItem(Base, SerializerMixin, BaseModel):
-#     __tablename__ = 'list_item'
-#     id = Column(Integer, primary_key=True)
-#     list_id = Column(Integer, ForeignKey('lsit.id'), primary_key=True)
-#     item_id = Column(Integer, ForeignKey('item.id'), primary_key=True)
-#
-#
+
+class ListItem(Base, SerializerMixin, BaseModel):
+    __tablename__ = 'list_item'
+    list_id = Column(Integer, ForeignKey('list.id'), primary_key=True)
+    item_id = Column(Integer, ForeignKey('item.id'), primary_key=True)
+
+
 
