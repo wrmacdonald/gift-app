@@ -35,7 +35,7 @@ class UserResource(Resource):
         updates any number of field on user record with user_id of id
         params:
         - id:int from url path
-        - name:str from request body
+        - first_name:str from request body
         - last_name:str from request body
         returns
         - Success: 200 and serialized updated User
@@ -46,7 +46,7 @@ class UserResource(Resource):
                 return {'message': f'User with id {user_id} does not exist'}, 404
 
             user_put_args = reqparse.RequestParser()
-            user_put_args.add_argument('name', type=str, help='name of the user is required', required=True)
+            user_put_args.add_argument('first_name', type=str, help='first name of the user is required', required=True)
             user_put_args.add_argument('last_name', type=str, help='last name of the user', required=True)
 
             args = user_put_args.parse_args()
@@ -81,21 +81,22 @@ class UsersResource(Resource):
     @staticmethod
     def post():
         """
-        creates new record with name and return entire serialized User
+        creates new record and return entire serialized User
         params:
-        - name:str from request body
-        - last_name:str from request body
+        - email_address:str from request body
         returns:
         - success: 201 and serialized User
         """
 
         try:
             user_post_args = reqparse.RequestParser()
-            user_post_args.add_argument('name', type=str, help='name of the user is required', required=True)
-            user_post_args.add_argument('last_name', type=str, help='last name of the user', required=True)
+            user_post_args.add_argument('email_address', type=str, help='email of the user is required', required=True)
+            user_post_args.add_argument('first_name', type=str, help='first name of the user')
+            user_post_args.add_argument('last_name', type=str, help='last name of the user')
             args = user_post_args.parse_args()
 
-            id = User.create(name=args.name, last_name=args.last_name)
+            id = User.create(email_address=args.email_address, first_name=args.first_name,
+                             last_name=args.last_name)
             user = User.get(id)
             return user.to_dict(), 201
 
@@ -157,10 +158,10 @@ class ItemResource(Resource):
                 return {'message': f'No user with id {user_id}'}, 400
 
             item_post_args = reqparse.RequestParser()
-            item_post_args.add_argument('name', type=str, help='name of the item is required', required=True)
+            item_post_args.add_argument('idea', type=str, help='idea name is required', required=True)
             args = item_post_args.parse_args()
 
-            item_id = Item.create(name=args.name, owned_by_user=user_id)
+            item_id = Item.create(idea=args.idea, owned_by_user=user_id)
             item = Item.get(item_id)
             return item.to_dict(), 201
 
