@@ -83,19 +83,20 @@ class UsersResource(Resource):
         """
         creates new record and return entire serialized User
         params:
-        - first_name:str from request body
-        - last_name:str from request body
+        - email_address:str from request body
         returns:
         - success: 201 and serialized User
         """
 
         try:
             user_post_args = reqparse.RequestParser()
-            user_post_args.add_argument('first_name', type=str, help='first name of the user is required', required=True)
-            user_post_args.add_argument('last_name', type=str, help='last name of the user is required', required=True)
+            user_post_args.add_argument('email_address', type=str, help='email of the user is required', required=True)
+            user_post_args.add_argument('first_name', type=str, help='first name of the user')
+            user_post_args.add_argument('last_name', type=str, help='last name of the user')
             args = user_post_args.parse_args()
 
-            id = User.create(first_name=args.first_name, last_name=args.last_name)
+            id = User.create(email_address=args.email_address, first_name=args.first_name,
+                             last_name=args.last_name)
             user = User.get(id)
             return user.to_dict(), 201
 

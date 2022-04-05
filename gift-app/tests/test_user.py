@@ -8,10 +8,10 @@ class UserTest(unittest.TestCase):
     """integration tests of the user model database interactions"""
 
     @parameterized.expand([
-        ['Bob', 'Willis'],
-        ['Robert', 'Wilmur']
+        ['Bob', 'Willis', 'bobw@test.com'],
+        ['Robert', 'Wilmur', 'rw@test.com']
     ])
-    def test_create_user(self, name, last_name):
+    def test_create_user(self, first_name, last_name, email_address):
         """
         create user object
         get new object id from database
@@ -19,25 +19,26 @@ class UserTest(unittest.TestCase):
         check that user exists
         """
 
-        new_user_id = User.create(name=name, last_name=last_name)
+        new_user_id = User.create(email_address=email_address, first_name=first_name, last_name=last_name)
 
         new_user = session.query(User).filter_by(id=new_user_id).first()
 
         self.assertIsNot(new_user, None)
-        self.assertEqual(new_user.name, name)
+        self.assertEqual(new_user.email_address, email_address)
+        self.assertEqual(new_user.first_name, first_name)
         self.assertEqual(new_user.last_name, last_name)
 
     @parameterized.expand([
-        ['Helma', 'Tail'],
-        ['Robert', 'Wilmur']
+        ['Helma', 'Tail', 'tail@test.com'],
+        ['Robert', 'Wilmur', 'rw@test.com']
     ])
-    def test_user_exists(self, name, last_name):
+    def test_user_exists(self, first_name, last_name, email_address):
         """
         create user object
         check that user exists
         """
 
-        user = User(name=name, last_name=last_name)
+        user = User(email_address=email_address, first_name=first_name, last_name=last_name)
 
         session.add(user)
         session.commit()
@@ -56,13 +57,13 @@ class UserTest(unittest.TestCase):
         self.assertFalse(User.exists(id))
 
     @parameterized.expand([
-        ['Bob', 'Willis'],
-        ['Velvet', 'Smithy']
+        ['Bob', 'Willis', 'bw@test.com'],
+        ['Velvet', 'Smithy', 'velvyta@test.com']
     ])
-    def test_get_user(self, name, last_name):
+    def test_get_user(self, first_name, last_name, email_address):
         """create user and test that it can be retrieved"""
 
-        user = User(name=name, last_name=last_name)
+        user = User(email_address=email_address, first_name=first_name, last_name=last_name)
 
         session.add(user)
         session.commit()
@@ -70,7 +71,8 @@ class UserTest(unittest.TestCase):
         db_user = User.get(user.id)
 
         self.assertEqual(db_user.id, user.id)
-        self.assertEqual(db_user.name, user.name)
+        self.assertEqual(db_user.email_address, user.email_address)
+        self.assertEqual(db_user.first_name, user.first_name)
         self.assertEqual(db_user.last_name, user.last_name)
 
     @parameterized.expand([[5], [1], [0]])
@@ -85,7 +87,7 @@ class UserTest(unittest.TestCase):
         session.commit()
 
         for i in range(num_users):
-            user = User(name='test', last_name='test_last')
+            user = User(email_address='test@test.com', first_name='test_first', last_name='test_last')
             session.add(user)
             session.commit()
 
@@ -95,15 +97,18 @@ class UserTest(unittest.TestCase):
 
 
     @parameterized.expand([
-        ['Bob', 'Willis', {}],
-        ['Velvet', 'Smithy', {'last_name': 'sMiThY'}],
-        ['Velvet', 'Smithy', {'name': 'Velv'}],
-        ['Velvet', 'Smithy', {'name': 'Velv', 'last_name': 'sMiThY'}]
+        ['Bob', 'Willis', 'bw@test.com', {}],
+        ['Velvet', 'Smithy', 'velvyta@test.com', {'last_name': 'sMiThY'}],
+        ['Velvet', 'Smithy', 'velvyta@test.com', {'name': 'Velv'}],
+        ['Velvet', 'Smithy', 'velvyta@test.com', {'name': 'Velv', 'last_name': 'sMiThY'}],
+        ['Velvet', 'Smithy', 'velvyta@test.com', {'email_address': 'cheddar@test.com'}],
+        ['Velvet', 'Smithy', 'velvyta@test.com', {'name': 'Velv', 'email_address': 'cheddar@test.com'}],
+        ['Velvet', 'Smithy', 'velvyta@test.com', {'name': 'Velv', 'last_name': 'sMiThY', 'email_address': 'cheddar@test.com'}]
     ])
-    def test_update_user(self, name, last_name, new_values):
+    def test_update_user(self, first_name, last_name, email_address, new_values):
         """create user and test that it can be retrieved"""
 
-        user = User(name=name, last_name=last_name)
+        user = User(email_address=email_address, first_name=first_name, last_name=last_name)
 
         session.add(user)
         session.commit()
@@ -112,21 +117,24 @@ class UserTest(unittest.TestCase):
 
         self.assertEqual(updated_user.id, user.id)
 
-        if name in new_values:
-            self.assertEqual(updated_user.name, new_values.name)
+        if email_address in new_values:
+            self.assertEqual(updated_user.email_address, new_values.email_address)
+
+        if first_name in new_values:
+            self.assertEqual(updated_user.first_name, new_values.first_name)
 
         if last_name in new_values:
             self.assertEqual(updated_user.last_name, new_values.last_name)
 
     @parameterized.expand([
-        ['Bob', 'Willis'],
-        ['Velvet', 'Smithy']
+        ['Bob', 'Willis', 'bw@test.com'],
+        ['Velvet', 'Smithy', 'velvyta@test.com']
     ])
-    def test_delete_user(self, name, last_name):
+    def test_delete_user(self, first_name, last_name, email_address):
         """create user, then delete it and make sure it does not exist anymore"""
 
         # create user
-        user = User(name=name, last_name=last_name)
+        user = User(email_address=email_address, first_name=first_name, last_name=last_name)
 
         session.add(user)
         session.commit()
