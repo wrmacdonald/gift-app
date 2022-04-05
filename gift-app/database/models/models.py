@@ -11,13 +11,13 @@ log = logging.getLogger(__name__)
 class User(Base, SerializerMixin, BaseModel):
     __tablename__ = 'user'
 
-    serialize_only = ('id', 'name', 'last_name',
+    serialize_only = ('id', 'first_name', 'last_name',
                       'groups.id', 'groups.name',
                       'lists.id', 'lists.name',
                       'items.id', 'items.name')
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(254))
+    first_name = Column(String(254))
     last_name = Column(String(254))
     lists = relationship('List')
     items = relationship('Item')

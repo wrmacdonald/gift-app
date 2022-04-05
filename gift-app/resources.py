@@ -35,7 +35,7 @@ class UserResource(Resource):
         updates any number of field on user record with user_id of id
         params:
         - id:int from url path
-        - name:str from request body
+        - first_name:str from request body
         - last_name:str from request body
         returns
         - Success: 200 and serialized updated User
@@ -46,7 +46,7 @@ class UserResource(Resource):
                 return {'message': f'User with id {user_id} does not exist'}, 404
 
             user_put_args = reqparse.RequestParser()
-            user_put_args.add_argument('name', type=str, help='name of the user is required', required=True)
+            user_put_args.add_argument('first_name', type=str, help='first name of the user is required', required=True)
             user_put_args.add_argument('last_name', type=str, help='last name of the user', required=True)
 
             args = user_put_args.parse_args()
@@ -81,9 +81,9 @@ class UsersResource(Resource):
     @staticmethod
     def post():
         """
-        creates new record with name and return entire serialized User
+        creates new record and return entire serialized User
         params:
-        - name:str from request body
+        - first_name:str from request body
         - last_name:str from request body
         returns:
         - success: 201 and serialized User
@@ -91,11 +91,11 @@ class UsersResource(Resource):
 
         try:
             user_post_args = reqparse.RequestParser()
-            user_post_args.add_argument('name', type=str, help='name of the user is required', required=True)
-            user_post_args.add_argument('last_name', type=str, help='last name of the user', required=True)
+            user_post_args.add_argument('first_name', type=str, help='first name of the user is required', required=True)
+            user_post_args.add_argument('last_name', type=str, help='last name of the user is required', required=True)
             args = user_post_args.parse_args()
 
-            id = User.create(name=args.name, last_name=args.last_name)
+            id = User.create(first_name=args.first_name, last_name=args.last_name)
             user = User.get(id)
             return user.to_dict(), 201
 
