@@ -1,5 +1,5 @@
-from database.database import session
 import logging
+from database.database import session
 
 log = logging.getLogger(__name__)
 

@@ -1,22 +1,15 @@
-from flask import render_template
-from flask_restful import Resource, reqparse, abort
-from database.models.models import User, Item, Group
-from database.models.base_model import DatabaseConnectionException
 import logging
+from flask_restful import Resource, reqparse
+from database.models.models import User, Item, Group, List
+from database.models.base_model import DatabaseConnectionException
 
 log = logging.getLogger(__name__)
-
-
-class Home(Resource):
-    @staticmethod
-    def get():
-        return render_template('home.html.jinja')
 
 
 class UserResource(Resource):
 
     @staticmethod
-    def get(id: int):
+    def get(user_id: int):
         """
         gets User with user_id matching id
         params: id:int from url path
@@ -26,21 +19,18 @@ class UserResource(Resource):
         - Exception: 500
         """
         try:
-            if not User.exists(id):
-                return {'message': f'User with id {id} does not exist'}, 404
+            if not User.exists(user_id):
+                return {'message': f'User with id {user_id} does not exist'}, 404
 
-            user = User.get(id)
-
-            if not user:
-                abort(404, message=f'User with id {id} does not exist')
+            user = User.get(user_id)
 
             return user.to_dict(), 200
 
-        except DatabaseConnectionException:
-            abort(500, message='Internal Service Error')
+        except DatabaseConnectionException as ex:
+            return {'message': 'Internal Service Error', 'error': ex}, 500
 
     @staticmethod
-    def put(id: int):
+    def put(user_id: int):
         """
         updates any number of field on user record with user_id of id
         params:
@@ -52,20 +42,20 @@ class UserResource(Resource):
         - Id doesn't exist in database: 404
         """
         try:
-            if not User.exists(id):
-                return {'message': f'User with id {id} does not exist'}, 404
+            if not User.exists(user_id):
+                return {'message': f'User with id {user_id} does not exist'}, 404
 
             user_put_args = reqparse.RequestParser()
             user_put_args.add_argument('name', type=str, help='name of the user is required', required=True)
             user_put_args.add_argument('last_name', type=str, help='last name of the user', required=True)
 
             args = user_put_args.parse_args()
-            user = User.update(id, **args)
+            user = User.update(user_id, **args)
 
             return user.to_dict(), 200
 
-        except DatabaseConnectionException:
-            abort(500, message='Internal Service Error')
+        except DatabaseConnectionException as ex:
+            return {'message': 'Internal Service Error', 'error': ex}, 500
 
 
 class UsersResource(Resource):
@@ -86,7 +76,7 @@ class UsersResource(Resource):
             return [user.to_dict() for user in users], 200
 
         except DatabaseConnectionException as ex:
-            abort(500, message='Internal Service Error')
+            return {'message': 'Internal Service Error', 'error': ex}, 500
 
     @staticmethod
     def post():
@@ -109,8 +99,8 @@ class UsersResource(Resource):
             user = User.get(id)
             return user.to_dict(), 201
 
-        except DatabaseConnectionException:
-            abort(500, message='Internal Service Error')
+        except DatabaseConnectionException as ex:
+            return {'message': 'Internal Service Error', 'error': ex}, 500
 
     @staticmethod
     def delete():
@@ -135,47 +125,56 @@ class UsersResource(Resource):
 
             return 'Success', 204
 
-        except DatabaseConnectionException:
-            abort(500, message='Internal Service Error')
+        except DatabaseConnectionException as ex:
+            return {'message': 'Internal Service Error', 'error': ex}, 500
 
 
 class ListResource(Resource):
     @staticmethod
-    def post(user_id:int):
+    def post(user_id: int):
         try:
+            if not User.exists(user_id):
+                return {'message': f'User with id {user_id} does not exist'}, 404
+
             user_post_args = reqparse.RequestParser()
             user_post_args.add_argument('name', type=str, help='name of the list is required', required=True)
             args = user_post_args.parse_args()
 
-            id = User.create(name=args.name, last_name=args.last_name)
+            id = List.create(name=args.name, owned_by_user=user_id)
             user = User.get(id)
             return user.to_dict(), 201
 
-        except DatabaseConnectionException:
-            abort(500, message='Internal Service Error')
+        except DatabaseConnectionException as ex:
+            return {'message': 'Internal Service Error', 'error': ex}, 500
 
 
 class ItemResource(Resource):
     @staticmethod
-    def post(user_id):
-        # create item associated with user_id with name
+    def post(user_id: int):
+
         try:
+            if not User.exists(user_id):
+                return {'message': f'No user with id {user_id}'}, 400
+
             item_post_args = reqparse.RequestParser()
             item_post_args.add_argument('name', type=str, help='name of the item is required', required=True)
             args = item_post_args.parse_args()
 
-            item_id = Item.create(name=args.name, user_id=user_id)
+            item_id = Item.create(name=args.name, owned_by_user=user_id)
             item = Item.get(item_id)
             return item.to_dict(), 201
 
-        except DatabaseConnectionException:
-            abort(500, message='Internal Service Error')
+        except DatabaseConnectionException as ex:
+            return {'message': 'Internal Service Error', 'error': ex}, 500
 
 
 class GroupResource(Resource):
     @staticmethod
-    def post(user_id):
+    def post(user_id: int):
         try:
+            if not User.exists(user_id):
+                return {'message': f'No user with id {user_id}'}, 400
+
             group_post_args = reqparse.RequestParser()
             group_post_args.add_argument('name', type=str, help='name of the group is required', required=True)
             args = group_post_args.parse_args()
@@ -189,8 +188,8 @@ class GroupResource(Resource):
 
             return group.to_dict(), 201
 
-        except DatabaseConnectionException:
-            abort(500, message='Internal Service Error')
+        except DatabaseConnectionException as ex:
+            return {'message': 'Internal Service Error', 'error': ex}, 500
 
 
 
