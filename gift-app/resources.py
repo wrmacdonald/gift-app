@@ -157,10 +157,10 @@ class ItemResource(Resource):
                 return {'message': f'No user with id {user_id}'}, 400
 
             item_post_args = reqparse.RequestParser()
-            item_post_args.add_argument('name', type=str, help='name of the item is required', required=True)
+            item_post_args.add_argument('idea', type=str, help='idea name is required', required=True)
             args = item_post_args.parse_args()
 
-            item_id = Item.create(name=args.name, owned_by_user=user_id)
+            item_id = Item.create(idea=args.idea, owned_by_user=user_id)
             item = Item.get(item_id)
             return item.to_dict(), 201
 
