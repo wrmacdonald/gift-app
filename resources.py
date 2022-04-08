@@ -151,6 +151,28 @@ class ListResource(Resource):
 
 class ItemResource(Resource):
     @staticmethod
+    def get(user_id: int):
+        """
+        gets all Items from database
+        returns
+        - success: 200 and list of all items
+        - no items in database: 204
+        """
+
+        try:
+            if not User.exists(user_id):
+                return {'message': f'No user with id {user_id}'}, 400
+
+            items = Item.get_all()
+            if len(items) == 0:
+                return 'no items for user found', 204
+
+            return [item.to_dict() for item in items], 200
+
+        except DatabaseConnectionException as ex:
+            return {'message': 'Internal Service Error', 'error': ex}, 500
+
+    @staticmethod
     def post(user_id: int):
 
         try:
