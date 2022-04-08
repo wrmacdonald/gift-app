@@ -183,7 +183,7 @@ class ItemResource(Resource):
             item_post_args.add_argument('idea', type=str, help='idea name is required', required=True)
             args = item_post_args.parse_args()
 
-            item_id = Item.create(idea=args.idea, owned_by_user=user_id)
+            item_id = Item.create(idea=args.idea, owned_by_user_id=user_id)
             item = Item.get(item_id)
             return item.to_dict(), 201
 

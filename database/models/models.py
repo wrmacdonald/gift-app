@@ -28,8 +28,7 @@ class User(Base, SerializerMixin, BaseModel):
     time_deleted = Column(DateTime(timezone=True))
     is_deleted = Column(Boolean, nullable=False, default=False)
     lists = relationship('List')
-    # items = relationship('Item', foreign_keys='Item.owned_by_user_id', back_populates='owned_by_user')
-    items = relationship('Item', back_populates='user')
+    items = relationship('Item', foreign_keys='Item.owned_by_user_id', back_populates='owned_by_user')
     groups = relationship('UserGroup', back_populates='user')
 
 
@@ -63,15 +62,15 @@ class List(Base, SerializerMixin, BaseModel):
 class Item(Base, SerializerMixin, BaseModel):
     __tablename__ = 'item'
 
-    serialize_only = ('id', 'owned_by_user', 'idea', 'link',
+    serialize_only = ('id', 'owned_by_user_id', 'idea', 'link',
                       'exact', 'similar', 'size', 'color',
                       'desire_level', 'time_added',
                       'is_purchased', 'time_purchased',
                       'is_deleted', 'time_deleted')
 
     id = Column(Integer, primary_key=True)
-    owned_by_user = Column(Integer, ForeignKey('user.id'), nullable=False)
-    # purchased_by_user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    owned_by_user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    purchased_by_user_id = Column(Integer, ForeignKey('user.id'))
     idea = Column(String(254))
     link = Column(String(254))
     exact = Column(Boolean, nullable=False, default=False)
@@ -85,9 +84,8 @@ class Item(Base, SerializerMixin, BaseModel):
     is_deleted = Column(Boolean, nullable=False, default=False)
     time_deleted = Column(DateTime(timezone=True))
     lists = relationship(List, secondary='list_item', back_populates="items")
-    # owned_by_user = relationship('User', foreign_keys='Item.owned_by_user_id', back_populates='items')
-    user = relationship('User', back_populates='items')
-    # purchased_by_user = relationship('User', foreign_keys='Item.purchased_by_user_id')
+    owned_by_user = relationship('User', foreign_keys='Item.owned_by_user_id', back_populates='items')
+    purchased_by_user = relationship('User', foreign_keys='Item.purchased_by_user_id')
 
 
 class ListItem(Base, SerializerMixin, BaseModel):
