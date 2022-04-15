@@ -1,10 +1,12 @@
 import logging
 from flask_restful import Resource, reqparse
 from database.models.models import User, Item, Group, List
-from database.models.base_model import DatabaseConnectionException
+from database.models.base_model import DatabaseActionException
 
 log = logging.getLogger(__name__)
 
+
+# authenticate
 
 class UserResource(Resource):
 
@@ -26,9 +28,10 @@ class UserResource(Resource):
 
             return user.to_dict(), 200
 
-        except DatabaseConnectionException as ex:
+        except DatabaseActionException as ex:
             return {'message': 'Internal Service Error', 'error': ex}, 500
 
+    # update user information
     @staticmethod
     def put(user_id: int):
         """
@@ -54,7 +57,7 @@ class UserResource(Resource):
 
             return user.to_dict(), 200
 
-        except DatabaseConnectionException as ex:
+        except DatabaseActionException as ex:
             return {'message': 'Internal Service Error', 'error': ex}, 500
 
 
@@ -75,9 +78,10 @@ class UsersResource(Resource):
 
             return [user.to_dict() for user in users], 200
 
-        except DatabaseConnectionException as ex:
+        except DatabaseActionException as ex:
             return {'message': 'Internal Service Error', 'error': ex}, 500
 
+    # create user account
     @staticmethod
     def post():
         """
@@ -100,7 +104,7 @@ class UsersResource(Resource):
             user = User.get(id)
             return user.to_dict(), 201
 
-        except DatabaseConnectionException as ex:
+        except DatabaseActionException as ex:
             return {'message': 'Internal Service Error', 'error': ex}, 500
 
     @staticmethod
@@ -126,7 +130,7 @@ class UsersResource(Resource):
 
             return 'Success', 204
 
-        except DatabaseConnectionException as ex:
+        except DatabaseActionException as ex:
             return {'message': 'Internal Service Error', 'error': ex}, 500
 
 
@@ -145,8 +149,17 @@ class ListResource(Resource):
             user = User.get(id)
             return user.to_dict(), 201
 
-        except DatabaseConnectionException as ex:
+        except DatabaseActionException as ex:
             return {'message': 'Internal Service Error', 'error': ex}, 500
+
+    # Delete List Item
+
+    # Get ListItems: Get all items & details for user & list
+
+    # Get ListItem by item_Id and list_id
+
+    # Add Item to List
+
 
 
 class ItemResource(Resource):
@@ -165,8 +178,22 @@ class ItemResource(Resource):
             item = Item.get(item_id)
             return item.to_dict(), 201
 
-        except DatabaseConnectionException as ex:
+        except DatabaseActionException as ex:
             return {'message': 'Internal Service Error', 'error': ex}, 500
+
+    # Add Item (POST api/users/<user_id>/items)
+        # Create new ListItem associated to user & group and Item with details sent in body
+
+    # Update Item (PUT api/users/<user_id>/items/<item_id>)
+        # Overwrite any columns (with some limits) to list object fields
+
+    # Delete Item (DELETE api/users/<user_id>/items/<item_id>)
+        # Delete all associated list items also
+
+    # Get Item by id
+
+    # Get Items
+        # Get all items & details for user
 
 
 class GroupResource(Resource):
@@ -189,8 +216,18 @@ class GroupResource(Resource):
 
             return group.to_dict(), 201
 
-        except DatabaseConnectionException as ex:
+        except DatabaseActionException as ex:
             return {'message': 'Internal Service Error', 'error': ex}, 500
+
+    # Create Group
+        # Create group
+        # Add users to group
+        # Create users
+        # Create empty list for each group member
+
+    # Update Group Members
+        # Add or remove group member
+        # Create empty list for each new group member
 
 
 

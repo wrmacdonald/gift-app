@@ -4,7 +4,7 @@ from database.database import session
 log = logging.getLogger(__name__)
 
 
-class DatabaseConnectionException(BaseException):
+class DatabaseActionException(BaseException):
     pass
 
 
@@ -17,8 +17,9 @@ class BaseModel:
         """
         try:
             return bool(session.query(cls).filter_by(id=id).first())
-        except:
-            raise DatabaseConnectionException
+        except Exception as ex:
+            log.error(str(ex))
+            raise DatabaseActionException(ex)
 
     @classmethod
     def create(cls, **kwargs) -> int:
@@ -28,66 +29,73 @@ class BaseModel:
         returns id of new object
         """
         obj = cls(**kwargs)
-        log.debug(f'saving new {cls} with id {id} to the database')
+        log.debug(f'saving new {cls} with id {obj.id} to the database')
         obj.save()
         return obj.id
 
     @classmethod
-    def get_all(cls) -> list:
+    def get_all(cls, **kwargs) -> list[object]:
         """
-        returns list of all rows in the database
+        returns list of all rows in the database that match kwargs
+        if no arguments are given, returns all instances
         """
         try:
             log.debug(f'fetching all {cls} from the database')
-            return cls.query.all()
-        except:
-            raise DatabaseConnectionException
+
+            if len(kwargs) == 0:
+                return cls.query.all()
+
+            return session.query(cls).filter_by(**kwargs).all()
+        except Exception as ex:
+            log.error(str(ex))
+            raise DatabaseActionException(ex)
 
     @classmethod
-    def get(cls, id):
+    def get(cls, **kwargs) -> object:
         """
-        params: id - id of row
-        returns object with id
+        get all instances of cls filtered by kwargs
         """
         try:
-            log.debug(f'fetching {cls} with id {id} users from database')
-            return session.query(cls).filter_by(id=id).first()
-        except:
-            raise DatabaseConnectionException
+            return session.query(cls).filter_by(**kwargs).first()
+        except Exception as ex:
+            log.error(str(ex))
+            raise DatabaseActionException(ex)
 
     @classmethod
-    def update(cls, id: int, **kwargs):
+    def update(cls, id: int, **kwargs) -> object:
         """
         params: id - id of row
         kwargs: dictionary of any number of variables
         gets instance of object with id
         assigns all variables in kwargs to it that match attributes of the object
+        ignores anything with a value of None
         and save updated object to database
         return User that was saved
         """
         try:
-
-            user = cls.get(id)
+            user = cls.get(id=id)
             log.debug(f'updating user {id}')
             for arg in kwargs:
-                if hasattr(user, arg):
+                if hasattr(user, arg) and kwargs[arg]:
                     setattr(user, arg, kwargs[arg])
                 else:
                     log.info(f'{cls} does not have an attribute {arg}')
             user.save()
             return user
-        except:
-            raise DatabaseConnectionException
+        except Exception as ex:
+            log.error(str(ex))
+            raise DatabaseActionException(ex)
 
     def save(self):
         """save to database"""
         try:
             session.add(self)
             session.commit()
-        except:
-            raise DatabaseConnectionException
+        except Exception as ex:
+            log.error(str(ex))
+            raise DatabaseActionException(ex)
 
-    def delete(self):
+    def delete(self) -> None:
         """
         deletes row from table
         id:int - id of row to delete
@@ -96,5 +104,6 @@ class BaseModel:
             log.info(f'deleting {type(self)} with id {id}')
             session.delete(self)
             session.commit()
-        except:
-            raise DatabaseConnectionException
+        except Exception as ex:
+            log.error(str(ex))
+            raise DatabaseActionException(ex)
