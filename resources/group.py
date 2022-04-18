@@ -9,17 +9,42 @@ log = logging.getLogger(__name__)
 class GroupResource(Resource):
 
     # Create Group
-        # Create group
-        # Add users to group
-        # Create users
-        # Create empty list for each group member
     @staticmethod
     def post():
         pass
 
-    # Update Group Members
-        # Add or remove group member
-        # Create empty list for each new group member
+    # Update Group Details
     @staticmethod
     def put():
+        pass
+
+    @staticmethod
+    def get():
+        # get list of groups that user is in
+        # user_id
+        pass
+
+
+# /api/group/<group_id:int>/members
+class GroupMembersResource(Resource):
+    # add user to group
+    @staticmethod
+    def post():
+        # group id
+        # user id
+        pass
+
+    # remove user from group
+    @ staticmethod
+    def delete():
+        # group id
+        # user id
+        pass
+
+
+class InviteMemberResource(Resource):
+    @staticmethod
+    def post():
+        # send invite email to email address
+        # group id
         pass

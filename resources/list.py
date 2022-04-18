@@ -6,7 +6,7 @@ from database.models.base_model import DatabaseActionException
 log = logging.getLogger(__name__)
 
 
-class ListItemResource(Resource):
+class ListResource(Resource):
 
     # Delete List Item (DELETE api/users/<user_id>/lists/<list_id>/items/<item_id>)
     @staticmethod
@@ -25,3 +25,10 @@ class ListItemResource(Resource):
     @staticmethod
     def post():
         pass
+
+    # remove item from list
+
+# class ListItemResource(Resource):
+# /api/lists/<list_id:int>/items
+# Delete
+# Post

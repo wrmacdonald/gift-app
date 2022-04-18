@@ -14,13 +14,13 @@ class UserResource(Resource):
     @staticmethod
     def post():
         """
-            Create Account and save user information
-            params:
-                - email_address
-                - first_name
-                - last_name
-                - hashed_password
-            - success: returns 200 and serialized User
+        Create Account and save user information
+        params:
+            - email_address
+            - first_name
+            - last_name
+            - hashed_password
+        - success: returns 200 and serialized User
         """
         try:
             post_args = reqparse.RequestParser()
@@ -41,16 +41,16 @@ class UserResource(Resource):
     @staticmethod
     def put():
         """
-            Update user information
-            params:
-            - id: int id of user to update - required
-            - email_address
-            - first_name
-            - last_name
-            - hashed_password
-            returns
-            - user does not exist: 404
-            - success: 200 and serialized User
+        Update user information
+        params:
+        - id: int id of user to update - required
+        - email_address
+        - first_name
+        - last_name
+        - hashed_password
+        returns
+        - user does not exist: 404
+        - success: 200 and serialized User
         """
         try:
             user_put_args = reqparse.RequestParser()
