@@ -32,7 +32,7 @@ class User(Base, SerializerMixin, BaseModel):
     groups = relationship('Group', secondary='user_group', back_populates="users")
 
 
-class Group(Base, SerializerMixin, BaseModel):
+class Group(BaseModel, Base, SerializerMixin):
     __tablename__ = 'group'
     id = Column(Integer, primary_key=True)
     name = Column(String(254))
