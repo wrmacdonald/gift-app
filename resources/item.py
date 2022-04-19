@@ -18,7 +18,7 @@ class ItemResource(Resource):
         """
         try:
             post_args = reqparse.RequestParser()
-            post_args.add_argument('owned_by_user', type=int, required=True)
+            post_args.add_argument('owned_by_user_id', type=int, required=True)
             post_args.add_argument('group_id')
             post_args.add_argument('idea')
             post_args.add_argument('link')
@@ -29,10 +29,10 @@ class ItemResource(Resource):
             post_args.add_argument('desire_level', type=int)
             args = post_args.parse_args()
 
-            if not User.exists(args.owned_by_user):
-                return {'message': f'User with id {args.owned_by_user} does not exist'}, 400
+            if not User.exists(args.owned_by_user_id):
+                return {'message': f'User with id {args.owned_by_user_id} does not exist'}, 400
 
-            item_id = Item.create(owned_by_user=args.owned_by_user,
+            item_id = Item.create(owned_by_user_id=args.owned_by_user_id,
                                   idea=args.idea,
                                   link=args.link,
                                   exact=args.exact,
@@ -61,7 +61,7 @@ class ItemResource(Resource):
         try:
             put_args = reqparse.RequestParser()
             put_args.add_argument('id', type=int, required=True)
-            put_args.add_argument('owned_by_user', type=int)
+            put_args.add_argument('owned_by_user_id', type=int)
             put_args.add_argument('group_id', type=int)
             put_args.add_argument('idea')
             put_args.add_argument('link', type=str)
@@ -75,8 +75,8 @@ class ItemResource(Resource):
             if not Item.exists(args.id):
                 return {'message': f'Item with id {args.id} does not exist'}, 400
 
-            if args.owned_by_user is not None and not User.exists(args.owned_by_user):
-                return {'message': f'User with id {args.owned_by_user} does not exist'}, 400
+            if args.owned_by_user_id is not None and not User.exists(args.owned_by_user_id):
+                return {'message': f'User with id {args.owned_by_user_id} does not exist'}, 400
 
             item = Item.update(**args)
             return serialize(item), 200
@@ -130,7 +130,7 @@ class ItemResource(Resource):
             if not User.exists(user_id):
                 return {'message': f'User with id {user_id} does not exist'}, 400
 
-            items = Item.get_all(owned_by_user=user_id)
+            items = Item.get_all(owned_by_user_id=user_id)
 
             return serialize(items), 200
 
