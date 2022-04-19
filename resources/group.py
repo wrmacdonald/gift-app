@@ -1,7 +1,8 @@
 import logging
 from flask import request
 from flask_restful import Resource, reqparse
-from database.models.models import User, Item, Group, List
+from flask_jwt_extended import jwt_required
+from database.models.models import User, Group
 from database.models.base_model import DatabaseActionException
 from serialize import serialize
 
@@ -10,8 +11,8 @@ log = logging.getLogger(__name__)
 
 class GroupResource(Resource):
 
-    @staticmethod
-    def post():
+    @jwt_required()
+    def post(self):
         """
         Create Group
         Create new Group associated to user who owns it
@@ -38,8 +39,8 @@ class GroupResource(Resource):
         except Exception as ex:
             return {'message': 'An internal service error occurred', 'error': str(ex)}
 
-    @staticmethod
-    def put():
+    @jwt_required()
+    def put(self):
         """
         Update Group information
         returns
@@ -66,8 +67,8 @@ class GroupResource(Resource):
         except DatabaseActionException as ex:
             return {'message': 'An internal service error occurred', 'error': str(ex)}
 
-    @staticmethod
-    def get():
+    @jwt_required()
+    def get(self):
         """
         get list of all Groups a User is in
         returns
