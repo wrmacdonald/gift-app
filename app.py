@@ -29,10 +29,3 @@ def main():
 if __name__ == '__main__':
     logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"), format='%(asctime)s %(message)s')
     exit(main())
-
-
-
-
-
-
-
