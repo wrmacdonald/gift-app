@@ -1,6 +1,7 @@
 import logging
 from flask import request
 from flask_restful import Resource, reqparse
+from flask_jwt_extended import jwt_required
 from database.models.models import User, Item
 from database.models.base_model import DatabaseActionException
 from serialize import serialize
@@ -10,8 +11,8 @@ log = logging.getLogger(__name__)
 
 class ItemResource(Resource):
 
-    @staticmethod
-    def post():
+    @jwt_required()
+    def post(self):
         """
         Add Item
         Create new ListItem associated to user & group and Item with details sent in body
@@ -48,10 +49,8 @@ class ItemResource(Resource):
         except Exception as ex:
             return {'message': 'An internal service error occurred', 'error': str(ex)}
 
-    # Update Item (PUT api/users/<user_id>/items/<item_id>)
-        # Overwrite any columns (with some limits) to list object fields
-    @staticmethod
-    def put():
+    @jwt_required()
+    def put(self):
         """
         Update item information
         returns
@@ -84,8 +83,8 @@ class ItemResource(Resource):
         except DatabaseActionException as ex:
             return {'message': 'An internal service error occurred', 'error': str(ex)}
 
-    @staticmethod
-    def delete():
+    @jwt_required()
+    def delete(self):
         """
         deletes Item with id
         params: id:int from request body
@@ -111,9 +110,8 @@ class ItemResource(Resource):
         except DatabaseActionException as ex:
             return {'message': 'Internal Service Error', 'error': str(ex)}, 500
 
-    # Get Item by id and or user
-    @staticmethod
-    def get():
+    @jwt_required()
+    def get(self):
         """
         gets all Item by user_id
         returns

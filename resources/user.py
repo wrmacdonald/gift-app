@@ -1,6 +1,7 @@
 import logging
 from flask import request
 from flask_restful import Resource, reqparse
+from flask_jwt_extended import jwt_required
 from database.models.models import User, Group
 from database.models.base_model import DatabaseActionException
 from serialize import serialize
@@ -11,43 +12,16 @@ log = logging.getLogger(__name__)
 
 class UserResource(Resource):
 
-    @staticmethod
-    def post():
-        """
-        Create Account and save user information
-        params:
-            - email_address
-            - first_name
-            - last_name
-            - hashed_password
-        - success: returns 200 and serialized User
-        """
-        try:
-            post_args = reqparse.RequestParser()
-            post_args.add_argument('email_address', required=True)
-            post_args.add_argument('first_name')
-            post_args.add_argument('last_name')
-            post_args.add_argument('hashed_password')
-            args = post_args.parse_args()
-
-            user_id = User.create(**args)
-
-            user = User.get(id=user_id)
-            return user.to_dict(), 201
-
-        except Exception as ex:
-            return {'message': 'An internal service error occurred', 'error': ex}, 500
-
-    @staticmethod
-    def put():
+    @jwt_required()
+    def put(self):
         """
         Update user information
         params:
         - id: int id of user to update - required
-        - email_address
+        - email
         - first_name
         - last_name
-        - hashed_password
+        - password
         returns
         - user does not exist: 404
         - success: 200 and serialized User
@@ -55,10 +29,10 @@ class UserResource(Resource):
         try:
             user_put_args = reqparse.RequestParser()
             user_put_args.add_argument('id', type=int, required=True)
-            user_put_args.add_argument('email_address')
+            user_put_args.add_argument('email')
             user_put_args.add_argument('first_name')
             user_put_args.add_argument('last_name')
-            user_put_args.add_argument('hashed_password')
+            user_put_args.add_argument('password')
             args = user_put_args.parse_args()
 
             if not User.exists(args.id):
@@ -72,8 +46,8 @@ class UserResource(Resource):
         except DatabaseActionException as ex:
             return {'message': 'Internal Service Error', 'error': ex}, 500
 
-    @staticmethod
-    def get():
+    @jwt_required()
+    def get(self):
         """
         gets all Users from database for group_id
         returns
@@ -95,8 +69,8 @@ class UserResource(Resource):
         except DatabaseActionException as ex:
             return {'message': 'Internal Service Error', 'error': str(ex)}, 500
 
-    @staticmethod
-    def delete():
+    @jwt_required()
+    def delete(self):
         """
         deletes User with id
         params: id:int from request body

@@ -1,23 +1,22 @@
 import logging
 import os
+from dotenv import load_dotenv
 from flask import Flask
 from flask_restful import Api
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager
 from database.database import init_db, drop_db
-from resources.user import UserResource
-from resources.item import ItemResource
+from routes import initialize_routes
+
+load_dotenv()
 
 app = Flask(__name__)
-api = Api(app)
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 
-api.add_resource(UserResource, '/api/users')
-api.add_resource(ItemResource, '/api/items')
-# api.add_resource(GroupResource, '/api/groups')
-# api.add_resource(ListResource, '/api/lists')
-# api.add_resource(GroupMembersResource, 'api/group/<group_id:int>/members')
-# api.add_resource(InviteMemberResource, '/api/groups/<group_id:int>/InviteMembers')
-# api.add_resource(ListItemResource, '/api/lists/<list_id:int>/items')
-# ActivateResource
-# AuthenticateResource
+bcrypt = Bcrypt(app)
+jwt = JWTManager(app)
+api = Api(app)
+initialize_routes(api)
 
 
 def main():

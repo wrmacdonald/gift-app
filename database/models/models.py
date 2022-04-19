@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from flask_bcrypt import generate_password_hash, check_password_hash
 from database.database import Base
 from database.models.base_model import BaseModel
 
@@ -12,8 +13,8 @@ log = logging.getLogger(__name__)
 class User(Base, SerializerMixin, BaseModel):
     __tablename__ = 'user'
 
-    serialize_only = ('id', 'first_name', 'last_name', 'email_address',
-                      'time_created', 'is_activated', 'is_deleted',
+    serialize_only = ('id', 'first_name', 'last_name', 'email',
+                      'created_on', 'is_activated',
                       'groups.id', 'groups.name',
                       'lists.id', 'lists.name',
                       'items.id', 'items.idea')
@@ -21,15 +22,20 @@ class User(Base, SerializerMixin, BaseModel):
     id = Column(Integer, primary_key=True)
     first_name = Column(String(254))
     last_name = Column(String(254))
-    email_address = Column(String(254), nullable=False)
-    hashed_password = Column(String(254))
-    time_created = Column(DateTime(timezone=True), server_default=func.now())
-    is_activated = Column(Boolean, nullable=False, default=False)
-    time_deleted = Column(DateTime(timezone=True))
-    is_deleted = Column(Boolean, nullable=False, default=False)
+    email = Column('email', String(254), nullable=False, unique=True)
+    password = Column('password', String(254), nullable=False)
+    created_on = Column(DateTime(timezone=True), server_default=func.now())
+    is_activated = Column(Boolean, default=False)
     lists = relationship('List')
     items = relationship('Item')
     groups = relationship('Group', secondary='user_group', back_populates="users")
+
+    @staticmethod
+    def hash_password(password):
+        return generate_password_hash(password).decode('utf8')
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
 
 class Group(BaseModel, Base, SerializerMixin):
