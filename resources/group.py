@@ -36,6 +36,7 @@ class GroupResource(Resource):
             group = Group.get(id=group_id)
             owner = User.get(id=args.owned_by_user)
             group.users.append(owner)
+            group.save()
 
             return serialize(group), 201
 
