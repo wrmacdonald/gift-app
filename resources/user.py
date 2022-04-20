@@ -60,7 +60,7 @@ class UserResource(Resource):
             if not Group.exists(group_id):
                 return {'message': f'Group with id {group_id} does not exist'}, 400
 
-            users = User.get_all(group_id=group_id)
+            users = User.get_all(group_id=group_id) # no property called group_id, need to query this from group table
             if len(users) == 0:
                 return 'no users found', 204
 
