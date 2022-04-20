@@ -37,7 +37,7 @@ class User(Base, SerializerMixin, BaseModel):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-#
+
 class Group(BaseModel, Base, SerializerMixin):
     __tablename__ = 'group'
     id = Column(Integer, primary_key=True)
