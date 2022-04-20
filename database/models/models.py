@@ -43,8 +43,6 @@ class Group(BaseModel, Base, SerializerMixin):
     id = Column(Integer, primary_key=True)
     name = Column(String(254))
     time_created = Column(DateTime(timezone=True), server_default=func.now())
-    time_deleted = Column(DateTime(timezone=True))
-    is_deleted = Column(Boolean, nullable=False, default=False)
     owned_by_user = Column(Integer, ForeignKey('user.id'), nullable=False)
     users = relationship(User, secondary='user_group', back_populates='groups')
 
@@ -69,8 +67,7 @@ class Item(Base, SerializerMixin, BaseModel):
     serialize_only = ('id', 'owned_by_user_id', 'idea', 'link',
                       'exact', 'similar', 'size', 'color',
                       'desire_level', 'time_added',
-                      'is_purchased', 'time_purchased',
-                      'is_deleted', 'time_deleted')
+                      'is_purchased', 'time_purchased')
 
     id = Column(Integer, primary_key=True)
     owned_by_user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
@@ -85,8 +82,6 @@ class Item(Base, SerializerMixin, BaseModel):
     time_added = Column(DateTime(timezone=True), server_default=func.now())
     is_purchased = Column(Boolean, nullable=False, default=False)
     time_purchased = Column(DateTime(timezone=True))
-    is_deleted = Column(Boolean, nullable=False, default=False)
-    time_deleted = Column(DateTime(timezone=True))
     lists = relationship(List, secondary='list_item', back_populates="items")
     owned_by_user = relationship('User', foreign_keys='Item.owned_by_user_id', back_populates='items')
     purchased_by_user = relationship('User', foreign_keys='Item.purchased_by_user_id')
