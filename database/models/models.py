@@ -28,8 +28,8 @@ class User(Base, SerializerMixin, BaseModel):
     is_activated = Column(Boolean, default=False)
     lists = relationship('List')
     items = relationship('Item', foreign_keys='Item.owned_by_user_id', back_populates='owned_by_user')
-    groups = relationship('UserGroup', back_populates='user')
-
+    groups = relationship('Group', secondary='user_group', back_populates='users')
+#
     @staticmethod
     def hash_password(password):
         return generate_password_hash(password).decode('utf8')
@@ -46,15 +46,13 @@ class Group(BaseModel, Base, SerializerMixin):
     time_deleted = Column(DateTime(timezone=True))
     is_deleted = Column(Boolean, nullable=False, default=False)
     owned_by_user = Column(Integer, ForeignKey('user.id'), nullable=False)
-    users = relationship('UserGroup', back_populates='group')
+    users = relationship(User, secondary='user_group', back_populates='groups')
 
 
-class UserGroup(Base, SerializerMixin, BaseModel):
+class UserGroup(Base):
     __tablename__ = 'user_group'
     user_id = Column(Integer, ForeignKey('user.id'), primary_key=True)
     group_id = Column(Integer, ForeignKey('group.id'), primary_key=True)
-    user = relationship('User', back_populates='groups')
-    group = relationship('Group', back_populates='users')
 
 
 class List(Base, SerializerMixin, BaseModel):
@@ -100,4 +98,4 @@ class ListItem(Base, SerializerMixin, BaseModel):
     item_id = Column(Integer, ForeignKey('item.id'), primary_key=True)
 
 
-
+#

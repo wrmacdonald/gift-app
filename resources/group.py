@@ -16,6 +16,7 @@ class GroupResource(Resource):
         """
         Create Group
         Create new Group associated to user who owns it
+        add owner to group.users
         returns
         - user does not exist: 400
         - success: 200 and serialized Group
@@ -33,6 +34,9 @@ class GroupResource(Resource):
                                     name=args.name)
 
             group = Group.get(id=group_id)
+            owner = User.get(id=args.owned_by_user)
+            group.users.append(owner)
+            group.save()
 
             return serialize(group), 201
 
@@ -92,21 +96,80 @@ class GroupResource(Resource):
             return {'message': 'An internal service error occurred', 'error': str(ex)}
 
 
-# /api/group/<group_id:int>/members
 class GroupMembersResource(Resource):
-    # add user to group
-    @staticmethod
-    def post():
-        # group id
-        # user id
-        pass
+    @jwt_required()
+    def post(self, group_id: int):
+        """
+        add user to group
+        params:
+        - group id from url path
+        - user id from body
+        returns 400 and message if
+            - user does not exist
+            - group does not exist
+        - 200 and group if successful
+        """
 
-    # remove user from group
-    @ staticmethod
-    def delete():
-        # group id
-        # user id
-        pass
+        try:
+            if not Group.exists(group_id):
+                return {'message': f'Group with id {group_id} does not exist'}, 404
+
+            post_args = reqparse.RequestParser()
+            post_args.add_argument('user_id', type=int, required=True)
+            args = post_args.parse_args()
+
+            if not User.exists(args.user_id):
+                return {'message': f'User with id {args.user_id} does not exist'}, 400
+
+            user = User.get(id=args.user_id)
+            group = Group.get(id=group_id)
+
+            group.users.append(user)
+            group.save()
+
+            return serialize(group), 200
+
+        except DatabaseActionException as ex:
+            return {'message': 'An internal service error occurred', 'error': str(ex)}
+
+    @jwt_required()
+    def delete(self,  group_id: int):
+        """
+        remove user from group
+        params:
+        - group id from url path
+        - user id from body
+        returns 400 if
+            - user does not exist
+            - group does not exist
+            - user is not in group.users
+        - 200 and group if successful
+        """
+
+        try:
+            if not Group.exists(group_id):
+                return {'message': f'Group with id {group_id} does not exist'}, 404
+
+            post_args = reqparse.RequestParser()
+            post_args.add_argument('user_id', type=int, required=True)
+            args = post_args.parse_args()
+
+            if not User.exists(args.user_id):
+                return {'message': f'User with id {args.user_id} does not exist'}, 400
+
+            user = User.get(id=args.user_id)
+            group = Group.get(id=group_id)
+
+            if user not in group.users:
+                return {'message': f'User with id {args.user_id} is not in group'}, 400
+
+            group.users.remove(user)
+            group.save()
+
+            return serialize(group), 200
+
+        except DatabaseActionException as ex:
+            return {'message': 'An internal service error occurred', 'error': str(ex)}
 
 
 class InviteMemberResource(Resource):
