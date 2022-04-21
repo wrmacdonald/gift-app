@@ -109,10 +109,9 @@ class GroupMembersResource(Resource):
             - group does not exist
         - 200 and group if successful
         """
-
         try:
             if not Group.exists(group_id):
-                return {'message': f'Group with id {group_id} does not exist'}, 404
+                return {'message': f'Group with id {group_id} does not exist'}, 400
 
             post_args = reqparse.RequestParser()
             post_args.add_argument('user_id', type=int, required=True)
@@ -133,7 +132,7 @@ class GroupMembersResource(Resource):
             return {'message': 'An internal service error occurred', 'error': str(ex)}
 
     @jwt_required()
-    def delete(self,  group_id: int):
+    def delete(self, group_id: int):
         """
         remove user from group
         params:
@@ -145,10 +144,9 @@ class GroupMembersResource(Resource):
             - user is not in group.users
         - 200 and group if successful
         """
-
         try:
             if not Group.exists(group_id):
-                return {'message': f'Group with id {group_id} does not exist'}, 404
+                return {'message': f'Group with id {group_id} does not exist'}, 400
 
             post_args = reqparse.RequestParser()
             post_args.add_argument('user_id', type=int, required=True)
