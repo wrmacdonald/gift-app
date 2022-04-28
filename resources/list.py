@@ -1,7 +1,6 @@
 import logging
 from flask_restful import Resource, reqparse
-from database.models.models import User, Item, Group, List, ListItem
-from database.models.base_model import DatabaseActionException
+from database.base_model import DatabaseActionException
 
 log = logging.getLogger(__name__)
 

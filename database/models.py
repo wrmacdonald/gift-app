@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from flask_bcrypt import generate_password_hash, check_password_hash
 from database.database import Base
-from database.models.base_model import BaseModel
+from database.base_model import BaseModel
 
 log = logging.getLogger(__name__)
 
@@ -25,11 +25,11 @@ class User(Base, SerializerMixin, BaseModel):
     email = Column('email', String(254), nullable=False, unique=True)
     password = Column('password', String(254), nullable=False)
     created_on = Column(DateTime(timezone=True), server_default=func.now())
-    is_activated = Column(Boolean, default=False)
+    activated = Column(Boolean, default=False)
     lists = relationship('List')
     items = relationship('Item', foreign_keys='Item.owned_by_user_id', back_populates='owned_by_user')
     groups = relationship('Group', secondary='user_group', back_populates='users')
-#
+
     @staticmethod
     def hash_password(password):
         return generate_password_hash(password).decode('utf8')
