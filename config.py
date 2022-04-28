@@ -9,9 +9,10 @@ class Config:
 
     # app configs
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
-    DB_HOST = os.getenv('DB_HOST')
+    SECURITY_PASSWORD_SALT = os.getenv('SECURITY_PASSWORD_SALT')
 
     # database configs
+    DB_HOST = os.getenv('DB_HOST')
 
     # # main config
     # SECRET_KEY = 'my_precious'
