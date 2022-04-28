@@ -3,12 +3,11 @@ import datetime
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token
 from database.models import User
-from database.base_model import BaseModel
 
 log = logging.getLogger(__name__)
 
 
-class Signup(BaseModel, Resource):
+class Signup(Resource):
     """
     creates a User record
     success: returns 200
