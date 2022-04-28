@@ -1,17 +1,16 @@
 import logging
 import os
-from dotenv import load_dotenv
 from flask import Flask
 from flask_restful import Api
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from database.database import init_db, drop_db
 from routes import initialize_routes
+from config import Config
 
-load_dotenv()
 
 app = Flask(__name__)
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+app.config['JWT_SECRET_KEY'] = Config.JWT_SECRET_KEY
 
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
