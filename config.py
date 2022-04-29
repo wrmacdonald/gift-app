@@ -31,4 +31,4 @@ class Config:
     # MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     #
     # # mail accounts
-    # v = os.getenv('MAIL_DEFAULT_SENDER')
+    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER')

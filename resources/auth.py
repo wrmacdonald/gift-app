@@ -1,9 +1,10 @@
 import logging
 import datetime
+from flask import render_template
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token
 from database.models import User
-from user_token import generate_confirmation_token, confirm_token
+from user_token import generate_confirmation_token
 
 log = logging.getLogger(__name__)
 
@@ -13,6 +14,7 @@ class Signup(Resource):
     creates a User record
     success: returns 200
     """
+
     def post(self):
         post_args = reqparse.RequestParser()
         post_args.add_argument('email', required=True)
@@ -25,6 +27,17 @@ class Signup(Resource):
                               password=User.hash_password(args.password),
                               first_name=args.first_name,
                               last_name=args.last_name)
+
+        user = User.get(email=args.email)
+
+        # generate token
+        token = generate_confirmation_token(user.email)
+
+        # send invitation email with activation link
+        url = 'http://localhost:5000/api/activate/' + token
+        html = render_template('user/activate.html', confirm_url=url)
+        subject = "Please confirm your email"
+        #self.send_email(user.email, subject, html)
 
         return {'id': str(user_id)}, 200
 
