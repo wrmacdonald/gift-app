@@ -26,11 +26,7 @@ class Signup(Resource):
                               first_name=args.first_name,
                               last_name=args.last_name)
 
-        user = User.get(id=user_id)
-
-        token = generate_confirmation_token(user.email)  # this will be in the invite resource
-
-        return {'id': str(user_id), 'token': token}, 200
+        return {'id': str(user_id)}, 200
 
 
 class Login(Resource):
