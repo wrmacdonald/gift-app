@@ -7,31 +7,28 @@ load_dotenv()
 class Config:
     """Base configuration."""
 
-    # app configs
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
-    SECURITY_PASSWORD_SALT = os.getenv('SECURITY_PASSWORD_SALT')
-
     # database configs
     DB_HOST = os.getenv('DB_HOST')
 
     # # main config
-    # SECRET_KEY = 'my_precious'
-    # SECURITY_PASSWORD_SALT = 'my_precious_two'
-    # DEBUG = False
-    # BCRYPT_LOG_ROUNDS = 13
-    # WTF_CSRF_ENABLED = True
-    # DEBUG_TB_ENABLED = False
-    # DEBUG_TB_INTERCEPT_REDIRECTS = False
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
+    SECRET_KEY = os.getenv('SECRET_KEY')
+    SECURITY_PASSWORD_SALT = os.getenv('SECURITY_PASSWORD_SALT')
+    # DEBUG = os.getenv('DEBUG')
+    # BCRYPT_LOG_ROUNDS = os.getenv('BCRYPT_LOG_ROUNDS')
+    # WTF_CSRF_ENABLED = os.getenv('WTF_CSRF_ENABLED')
+    # DEBUG_TB_ENABLED = os.getenv('DEBUG_TB_ENABLED')
+    # DEBUG_TB_INTERCEPT_REDIRECTS = os.getenv('DEBUG_TB_INTERCEPT_REDIRECTS')
     #
     # # mail settings
-    # MAIL_SERVER = 'smtp.googlemail.com'
-    # MAIL_PORT = 465
-    # MAIL_USE_TLS = False
-    # MAIL_USE_SSL = True
+    # MAIL_SERVER = os.getenv('MAIL_SERVER')
+    # MAIL_PORT = os.getenv('MAIL_PORT')
+    # MAIL_USE_TLS = os.getenv('MAIL_USE_TLS')
+    # MAIL_USE_SSL = os.getenv('MAIL_USE_SSL')
     #
     # # gmail authentication
-    # MAIL_USERNAME = os.environ['APP_MAIL_USERNAME']
-    # MAIL_PASSWORD = os.environ['APP_MAIL_PASSWORD']
+    # MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    # MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     #
     # # mail accounts
-    # MAIL_DEFAULT_SENDER = 'from@example.com'
+    # v = os.getenv('MAIL_DEFAULT_SENDER')

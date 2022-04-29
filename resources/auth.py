@@ -3,6 +3,7 @@ import datetime
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token
 from database.models import User
+from user_token import generate_confirmation_token, confirm_token
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +26,11 @@ class Signup(Resource):
                               first_name=args.first_name,
                               last_name=args.last_name)
 
-        return {'id': str(user_id)}, 200
+        user = User.get(id=user_id)
+
+        token = generate_confirmation_token(user.email)  # this will be in the invite resource
+
+        return {'id': str(user_id), 'token': token}, 200
 
 
 class Login(Resource):

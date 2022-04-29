@@ -11,6 +11,7 @@ from config import Config
 
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = Config.JWT_SECRET_KEY
+app.config['SECRET_KEY'] = Config.SECRET_KEY
 
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
