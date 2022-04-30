@@ -1,11 +1,11 @@
 import logging
 import datetime
-from flask import render_template
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token
 from database.models import User
 from user_token import generate_confirmation_token
-from mail import send_email
+from mail.mail import send_email
+from mail.messages import ActivateAccountMessage
 
 log = logging.getLogger(__name__)
 
@@ -31,15 +31,10 @@ class Signup(Resource):
 
         user = User.get(email=args.email)
 
-        # generate token
         token = generate_confirmation_token(user.email)
+        msg = ActivateAccountMessage(token)
 
-        # send invitation email with activation link
-        url = 'http://localhost:5000/api/activate/' + token
-        # html = render_template('user/activate.html', confirm_url=url)
-        body = f'Welcome! Thanks for signing up. Please follow this link to activate your account:{url}\n\nThanks!'
-        subject = "Please confirm your email"
-        send_email(user.email, subject, body)
+        send_email(user.email, msg)
 
         return {'id': str(user_id)}, 200
 

@@ -1,8 +1,9 @@
 import smtplib
 from config import Config
+from mail.messages import Message
 
 
-def send_email(recipient: str, subject: str, body: str):
+def send_email(recipient: str, msg: Message):
 
     with smtplib.SMTP(Config.MAIL_SERVER, Config.MAIL_PORT) as smpt:
         smpt.ehlo()
@@ -11,6 +12,6 @@ def send_email(recipient: str, subject: str, body: str):
 
         smpt.login(Config.MAIL_USERNAME, Config.MAIL_PASSWORD)
 
-        msg = f'{subject}\n\n{body}'
+        msg = f'{msg.subject}\n\n{msg.body}'
         smpt.sendmail(Config.MAIL_DEFAULT_SENDER, recipient, msg)
 
