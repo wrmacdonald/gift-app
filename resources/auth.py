@@ -5,6 +5,7 @@ from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token
 from database.models import User
 from user_token import generate_confirmation_token
+from mail import send_email
 
 log = logging.getLogger(__name__)
 
@@ -35,9 +36,10 @@ class Signup(Resource):
 
         # send invitation email with activation link
         url = 'http://localhost:5000/api/activate/' + token
-        html = render_template('user/activate.html', confirm_url=url)
+        # html = render_template('user/activate.html', confirm_url=url)
+        body = f'Welcome! Thanks for signing up. Please follow this link to activate your account:{url}\n\nThanks!'
         subject = "Please confirm your email"
-        #self.send_email(user.email, subject, html)
+        send_email(user.email, subject, body)
 
         return {'id': str(user_id)}, 200
 

@@ -22,7 +22,6 @@ initialize_routes(api)
 def main():
     drop_db()
     init_db()
-
     app.run(debug=True)
 
 
