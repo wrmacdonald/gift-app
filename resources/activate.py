@@ -15,13 +15,14 @@ class Activate(Resource):
         except:
             return 'The confirmation link is invalid or has expired.', 400
 
-        user = User.get(email=email)
-        if user.activated:
-            return 'Account already confirmed. Please login.', 204
-        else:
-            user.activated = True
-            user.save()
-            return 'You have confirmed your account. Thanks!', 200
-
-
+        try:
+            user = User.get(email=email)
+            if user.activated:
+                return 'Account already confirmed. Please login.', 204
+            else:
+                user.activated = True
+                user.save()
+                return 'You have confirmed your account. Thanks!', 200
+        except Exception as ex:
+            return {'message': 'An internal service error occurred', 'error': str(ex)}
 

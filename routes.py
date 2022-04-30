@@ -16,4 +16,3 @@ def initialize_routes(api):
      # api.add_resource(ListResource, '/api/lists')
      # api.add_resource(InviteMemberResource, '/api/groups/<group_id:int>/InviteMembers')
      # api.add_resource(ListItemResource, '/api/lists/<list_id:int>/items')
-     # ActivateResource
