@@ -1,17 +1,12 @@
 import smtplib
 from config import Config
-from mail.messages import Message
 
 
-def send_email(recipient: str, msg: Message):
+def send_email(msg):
+    """log into ssl connection to google smpt server amd snd message"""
 
-    with smtplib.SMTP(Config.MAIL_SERVER, Config.MAIL_PORT) as smpt:
-        smpt.ehlo()
-        smpt.starttls()
-        smpt.ehlo()
-
+    with smtplib.SMTP_SSL(Config.MAIL_SERVER, Config.MAIL_PORT) as smpt:
         smpt.login(Config.MAIL_USERNAME, Config.MAIL_PASSWORD)
+        smpt.send_message(msg)
 
-        msg = f'{msg.subject}\n\n{msg.body}'
-        smpt.sendmail(Config.MAIL_DEFAULT_SENDER, recipient, msg)
 

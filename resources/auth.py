@@ -3,9 +3,9 @@ import datetime
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token
 from database.models import User
-from user_token import generate_confirmation_token
+from confirmation_token import generate_confirmation_token
 from mail.mail import send_email
-from mail.messages import ActivateAccountMessage
+from mail.messages import EmailConfirmationMessage
 
 log = logging.getLogger(__name__)
 
@@ -33,9 +33,8 @@ class Signup(Resource):
             user = User.get(email=args.email)
 
             token = generate_confirmation_token(user.email)
-            msg = ActivateAccountMessage(token)
-
-            send_email(user.email, msg)
+            msg = EmailConfirmationMessage(token, user.email)
+            send_email(msg)
 
             return {'id': str(user_id)}, 200
 
@@ -52,7 +51,8 @@ class Login(Resource):
         - email
         - password
         returns 200 and jwt if params matches a User record in the database
-        returns 401 if it does not match
+        returns 401 if it does not match or if user is not confirmed yet
+        returns 404 if no user was found for the corresponding email
         """
 
         try:
@@ -62,9 +62,16 @@ class Login(Resource):
             args = post_args.parse_args()
 
             user = User.get(email=args.email)
+            if not user:
+                return {'error': 'email does not match any users'}, 404
+
             authorized = user.check_password(args.password)
+
             if not authorized:
                 return {'error': 'Email or password invalid'}, 401
+
+            if not user.activated:
+                return {'error': 'Please activate account in order to log in'}, 401
 
             expires = datetime.timedelta(days=7)
             access_token = create_access_token(identity=str(user.id), expires_delta=expires)

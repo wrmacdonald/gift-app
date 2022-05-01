@@ -1,12 +1,26 @@
-class Message:
-    def __init__(self, body, subject):
-        self.body = body
-        self.subject = subject
+from string import Template
+from config import Config
+from email.message import EmailMessage
 
 
-class ActivateAccountMessage(Message):
-    def __init__(self, token):
+class EmailConfirmationMessage(EmailMessage):
+
+    def __init__(self, token: str, recipient: str):
+        super().__init__()
+
         url = 'http://localhost:5000/api/activate/' + token
-        body = f'Welcome! Thanks for signing up. Please follow this link to activate your account:{url}\n\nThanks!'
-        subject = "Please confirm your email"
-        super().__init__(body, subject)
+        self['Subject'] = Subjects.CONFIRMATION
+        self['To'] = recipient
+        self['From'] = Config.MAIL_DEFAULT_SENDER
+        self.set_content(BodyTemplates.CONFIRMATION_BODY.substitute(url=url))
+
+
+class Subjects:
+    CONFIRMATION = "Confirm your email"
+
+
+class BodyTemplates:
+    CONFIRMATION_BODY = Template(
+        'Welcome to the GIFT APP, thanks for signing up!\n\n'
+        + 'Please follow this link to confirm your email:$url\n\n'
+        + 'Thanks,\n-The gift app team')
