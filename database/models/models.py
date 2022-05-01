@@ -57,7 +57,7 @@ class List(Base, SerializerMixin, BaseModel):
     __tablename__ = 'list'
     id = Column(Integer, primary_key=True)
     owned_by_user = Column(Integer, ForeignKey('user.id'), nullable=False)
-    # TODO: Add group fk
+    group_id = Column(Integer, ForeignKey('group.id'))
     name = Column(String(254))
     items = relationship('Item', secondary='list_item', back_populates="lists")
 
