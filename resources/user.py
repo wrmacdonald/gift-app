@@ -43,7 +43,7 @@ class UserResource(Resource):
 
             return serialize(user), 200
 
-        except DatabaseActionException as ex:
+        except Exception as ex:
             return {'message': 'Internal Service Error', 'error': ex}, 500
 
     @jwt_required()
@@ -58,7 +58,7 @@ class UserResource(Resource):
         try:
             group_id = int(request.args.get('group_id'))
             if not Group.exists(group_id):
-                return {'message': f'Group with id {group_id} does not exist'}, 400
+                return {'message': f'Group with id {group_id} does not exist'}, 404
 
             group = Group.get(id=group_id)
             users = group.users
@@ -68,7 +68,7 @@ class UserResource(Resource):
 
             return serialize(users), 200
 
-        except DatabaseActionException as ex:
+        except Exception as ex:
             return {'message': 'Internal Service Error', 'error': str(ex)}, 500
 
     @jwt_required()
@@ -94,7 +94,7 @@ class UserResource(Resource):
 
             return 'Success', 204
 
-        except DatabaseActionException as ex:
+        except Exception as ex:
             return {'message': 'Internal Service Error', 'error': ex}, 500
 
 

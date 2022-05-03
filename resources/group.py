@@ -28,7 +28,7 @@ class GroupResource(Resource):
             args = post_args.parse_args()
 
             if not User.exists(args.owned_by_user):
-                return {'message': f'User with id {args.owned_by_user} does not exist'}, 400
+                return {'message': f'User with id {args.owned_by_user} does not exist'}, 404
 
             group_id = Group.create(owned_by_user=args.owned_by_user,
                                     name=args.name)
@@ -59,17 +59,17 @@ class GroupResource(Resource):
             args = put_args.parse_args()
 
             if not Group.exists(args.id):
-                return {'message': f'Group with id {args.id} does not exist'}, 400
+                return {'message': f'Group with id {args.id} does not exist'}, 404
 
             if args.owned_by_user is not None and not User.exists(args.owned_by_user):
-                return {'message': f'User with id {args.owned_by_user} does not exist'}, 400
+                return {'message': f'User with id {args.owned_by_user} does not exist'}, 404
 
             group = Group.update(**args)
 
             return serialize(group), 200
 
-        except DatabaseActionException as ex:
-            return {'message': 'An internal service error occurred', 'error': str(ex)}
+        except Exception as ex:
+            return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
 
     @jwt_required()
     def get(self):
@@ -83,17 +83,17 @@ class GroupResource(Resource):
             user_id = int(request.args.get('user_id'))
 
             if not user_id:
-                return {'message': 'user_id must be specific'}, 400
+                return {'message': 'user_id must be specified'}, 400
 
             if not User.exists(user_id):
-                return {'message': f'User with id {user_id} does not exist'}, 400
+                return {'message': f'User with id {user_id} does not exist'}, 404
 
             groups = Group.get_all(owned_by_user=user_id)
 
             return serialize(groups), 200
 
-        except DatabaseActionException as ex:
-            return {'message': 'An internal service error occurred', 'error': str(ex)}
+        except Exception as ex:
+            return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
 
 
 class GroupMembersResource(Resource):
@@ -119,7 +119,7 @@ class GroupMembersResource(Resource):
             args = post_args.parse_args()
 
             if not User.exists(args.user_id):
-                return {'message': f'User with id {args.user_id} does not exist'}, 400
+                return {'message': f'User with id {args.user_id} does not exist'}, 404
 
             user = User.get(id=args.user_id)
             group = Group.get(id=group_id)
@@ -129,8 +129,8 @@ class GroupMembersResource(Resource):
 
             return serialize(group), 200
 
-        except DatabaseActionException as ex:
-            return {'message': 'An internal service error occurred', 'error': str(ex)}
+        except Exception as ex:
+            return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
 
     @jwt_required()
     def delete(self,  group_id: int):
@@ -155,7 +155,7 @@ class GroupMembersResource(Resource):
             args = post_args.parse_args()
 
             if not User.exists(args.user_id):
-                return {'message': f'User with id {args.user_id} does not exist'}, 400
+                return {'message': f'User with id {args.user_id} does not exist'}, 404
 
             user = User.get(id=args.user_id)
             group = Group.get(id=group_id)
@@ -168,13 +168,6 @@ class GroupMembersResource(Resource):
 
             return serialize(group), 200
 
-        except DatabaseActionException as ex:
-            return {'message': 'An internal service error occurred', 'error': str(ex)}
+        except Exception as ex:
+            return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
 
-
-class InviteMemberResource(Resource):
-    @staticmethod
-    def post():
-        # send invite email to email address
-        # group id
-        pass

@@ -4,7 +4,7 @@ from database.database import session
 log = logging.getLogger(__name__)
 
 
-class DatabaseActionException(BaseException):
+class DatabaseActionException(Exception):
     pass
 
 

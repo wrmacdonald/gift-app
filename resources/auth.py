@@ -78,7 +78,7 @@ class Login(Resource):
             return {'token': access_token}, 200
 
         except Exception as ex:
-            return {'message': 'An internal service error occurred', 'error': str(ex)}
+            return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
 
 
 
