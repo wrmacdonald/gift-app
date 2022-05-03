@@ -18,7 +18,7 @@ class GroupResource(Resource):
         Create new Group associated to user who owns it
         add owner to group.users
         returns
-        - user does not exist: 400
+        - user does not exist: 404
         - success: 200 and serialized Group
         """
         try:
@@ -41,14 +41,15 @@ class GroupResource(Resource):
             return serialize(group), 201
 
         except Exception as ex:
-            return {'message': 'An internal service error occurred', 'error': str(ex)}
+            return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
 
     @jwt_required()
     def put(self):
         """
         Update Group information
         returns
-        - user does not exist: 400
+        - group does not exist: 404
+        - group not owned by user and/or user does not exist: 400
         - success: 200 and serialized Group
         """
         try:
@@ -76,7 +77,8 @@ class GroupResource(Resource):
         """
         get list of all Groups a User is in
         returns
-        - user does not exist: 400
+        - user_id not given: 400
+        - user does not exist: 404
         - success: 200 and list of Groups
         """
         try:
@@ -104,12 +106,11 @@ class GroupMembersResource(Resource):
         params:
         - group id from url path
         - user id from body
-        returns 400 and message if
-            - user does not exist
-            - group does not exist
+        returns:
+        - user does not exist: 404
+        - group does not exist: 404
         - 200 and group if successful
         """
-
         try:
             if not Group.exists(group_id):
                 return {'message': f'Group with id {group_id} does not exist'}, 404
@@ -133,19 +134,18 @@ class GroupMembersResource(Resource):
             return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
 
     @jwt_required()
-    def delete(self,  group_id: int):
+    def delete(self, group_id: int):
         """
         remove user from group
         params:
         - group id from url path
         - user id from body
-        returns 400 if
-            - user does not exist
-            - group does not exist
-            - user is not in group.users
+        returns
+        - user does not exist: 404
+        - group does not exist: 404
+        - user is not in group.users: 400
         - 200 and group if successful
         """
-
         try:
             if not Group.exists(group_id):
                 return {'message': f'Group with id {group_id} does not exist'}, 404
@@ -170,4 +170,3 @@ class GroupMembersResource(Resource):
 
         except Exception as ex:
             return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
-
