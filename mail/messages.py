@@ -8,7 +8,7 @@ class EmailConfirmationMessage(EmailMessage):
     def __init__(self, token: str, recipient: str):
         super().__init__()
 
-        url = 'http://localhost:5000/api/activate/' + token
+        url = 'http://localhost:5000/api/confirm-email/' + token
         self['Subject'] = Subjects.CONFIRMATION
         self['To'] = recipient
         self['From'] = Config.MAIL_DEFAULT_SENDER

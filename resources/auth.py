@@ -70,7 +70,7 @@ class Login(Resource):
             if not authorized:
                 return {'error': 'Email or password invalid'}, 401
 
-            if not user.activated:
+            if not user.confirmed:
                 return {'error': 'Please activate account in order to log in'}, 401
 
             expires = datetime.timedelta(days=7)

@@ -13,8 +13,7 @@ log = logging.getLogger(__name__)
 class User(Base, SerializerMixin, BaseModel):
     __tablename__ = 'user'
 
-    serialize_only = ('id', 'first_name', 'last_name', 'email',
-                      'created_on', 'is_activated',
+    serialize_only = ('id', 'first_name', 'last_name', 'email', 'confirmed',
                       'groups.id', 'groups.name',
                       'lists.id', 'lists.name',
                       'items.id', 'items.idea')
