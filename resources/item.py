@@ -2,8 +2,8 @@ import logging
 from flask import request
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required
-from database.models.models import User, Item
-from database.models.base_model import DatabaseActionException
+from database.models import User, Item
+from database.base_model import DatabaseActionException
 from serialize import serialize
 
 log = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ class ItemResource(Resource):
             args = post_args.parse_args()
 
             if not User.exists(args.owned_by_user_id):
-                return {'message': f'User with id {args.owned_by_user_id} does not exist'}, 400
+                return {'message': f'User with id {args.owned_by_user_id} does not exist'}, 404
 
             item_id = Item.create(owned_by_user_id=args.owned_by_user_id,
                                   idea=args.idea,
@@ -47,16 +47,16 @@ class ItemResource(Resource):
             return serialize(item), 201
 
         except Exception as ex:
-            return {'message': 'An internal service error occurred', 'error': str(ex)}
+            return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
 
     @jwt_required()
     def put(self):
         """
         Update item information
         returns
-        - user does not exist or item doesn't exist: 400
+        - user does not exist or item doesn't exist: 404
         - success: 200 and serialized User
-    """
+        """
         try:
             put_args = reqparse.RequestParser()
             put_args.add_argument('id', type=int, required=True)
@@ -72,16 +72,16 @@ class ItemResource(Resource):
             args = put_args.parse_args()
 
             if not Item.exists(args.id):
-                return {'message': f'Item with id {args.id} does not exist'}, 400
+                return {'message': f'Item with id {args.id} does not exist'}, 404
 
             if args.owned_by_user_id is not None and not User.exists(args.owned_by_user_id):
-                return {'message': f'User with id {args.owned_by_user_id} does not exist'}, 400
+                return {'message': f'User with id {args.owned_by_user_id} does not exist'}, 404
 
             item = Item.update(**args)
             return serialize(item), 200
 
-        except DatabaseActionException as ex:
-            return {'message': 'An internal service error occurred', 'error': str(ex)}
+        except Exception as ex:
+            return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
 
     @jwt_required()
     def delete(self):
@@ -102,12 +102,11 @@ class ItemResource(Resource):
 
             item = Item.get(id=args.id)
 
-            # delete any list items first
             item.delete()
 
             return 'Success', 204
 
-        except DatabaseActionException as ex:
+        except Exception as ex:
             return {'message': 'Internal Service Error', 'error': str(ex)}, 500
 
     @jwt_required()
@@ -123,14 +122,14 @@ class ItemResource(Resource):
             user_id = int(request.args.get('user_id'))
 
             if not user_id:
-                return {'message': 'user_id must be specific'}, 400
+                return {'message': 'user_id must be specified'}, 400
 
             if not User.exists(user_id):
-                return {'message': f'User with id {user_id} does not exist'}, 400
+                return {'message': f'User with id {user_id} does not exist'}, 404
 
             items = Item.get_all(owned_by_user_id=user_id)
 
             return serialize(items), 200
 
-        except DatabaseActionException as ex:
+        except Exception as ex:
             return {'message': 'Internal Service Error', 'error': str(ex)}, 500

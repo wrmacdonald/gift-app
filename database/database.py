@@ -1,19 +1,12 @@
-import os
 import logging
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from config import Config
 
 log = logging.getLogger(__name__)
 
-load_dotenv()
-
-# connect to mySQL server
-DB_HOST = os.getenv("DB_HOST")
-engine = create_engine(DB_HOST)
-
-
+engine = create_engine(Config.DB_HOST)
 session = scoped_session(sessionmaker(autocommit=False,
                                       autoflush=False,
                                       bind=engine))

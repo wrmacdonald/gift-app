@@ -2,8 +2,8 @@ import logging
 from flask import request
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required
-from database.models.models import User, Group
-from database.models.base_model import DatabaseActionException
+from database.models import User, Group
+from database.base_model import DatabaseActionException
 from serialize import serialize
 
 log = logging.getLogger(__name__)
@@ -63,13 +63,13 @@ class GroupResource(Resource):
                 return {'message': f'Group with id {args.id} does not exist'}, 404
 
             if args.owned_by_user is not None and not User.exists(args.owned_by_user):
-                return {'message': f'User with id {args.owned_by_user} does not exist'}, 400
+                return {'message': f'User with id {args.owned_by_user} does not exist'}, 404
 
             group = Group.update(**args)
 
             return serialize(group), 200
 
-        except DatabaseActionException as ex:
+        except Exception as ex:
             return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
 
     @jwt_required()
@@ -94,7 +94,7 @@ class GroupResource(Resource):
 
             return serialize(groups), 200
 
-        except DatabaseActionException as ex:
+        except Exception as ex:
             return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
 
 
@@ -130,7 +130,7 @@ class GroupMembersResource(Resource):
 
             return serialize(group), 200
 
-        except DatabaseActionException as ex:
+        except Exception as ex:
             return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
 
     @jwt_required()
@@ -168,13 +168,5 @@ class GroupMembersResource(Resource):
 
             return serialize(group), 200
 
-        except DatabaseActionException as ex:
+        except Exception as ex:
             return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
-
-
-class InviteMemberResource(Resource):
-    @staticmethod
-    def post():
-        # send invite email to email address
-        # group id
-        pass

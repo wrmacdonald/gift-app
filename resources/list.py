@@ -2,8 +2,8 @@ import logging
 from flask import request
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required
-from database.models.models import List, ListItem, User, Item, Group
-from database.models.base_model import DatabaseActionException
+from database.models import List, User, Item, Group
+from database.base_model import DatabaseActionException
 from serialize import serialize
 
 log = logging.getLogger(__name__)
