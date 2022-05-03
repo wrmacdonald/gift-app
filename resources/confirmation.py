@@ -8,7 +8,8 @@ log = logging.getLogger(__name__)
 
 
 class EmailConfirmation(Resource):
-    def post(self, token: str):
+
+    def get(self, token: str):
         """confirm user's email from token"""
 
         try:
