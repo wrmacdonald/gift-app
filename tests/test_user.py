@@ -7,6 +7,17 @@ from parameterized import parameterized
 class UserTest(unittest.TestCase):
     """integration tests of the user model database interactions"""
 
+    @parameterized.expand([[1], [2]])
+    def test_reinitialize_db(self, id):
+        """drop db & then make sure no users exist"""
+        drop_db()
+        init_db()
+
+        session.query(User).delete()
+        session.commit()
+
+        self.assertFalse(User.exists(id))
+
     @parameterized.expand([
         ['Bob', 'Willis', 'bobw@test.com'],
         ['Robert', 'Wilmur', 'rw@test.com']
