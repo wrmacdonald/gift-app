@@ -1,9 +1,10 @@
 import logging
+from flask import request
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required
 from mail.mail import send_email
 from mail.messages import EmailInviteMessage
-from database.models import Group
+from database.models import Group, User
 
 log = logging.getLogger(__name__)
 
@@ -19,8 +20,8 @@ class InviteMemberResource(Resource):
         - email from body
         returns:
         - group does not exist: 404
-        - email not given: 404
-        - 200
+        - email not given: 400
+        - email sent confirmation: 200
         """
         try:
             post_args = reqparse.RequestParser()
@@ -31,7 +32,7 @@ class InviteMemberResource(Resource):
                 return {'message': f'Group with id {group_id} does not exist'}, 404
 
             if not args.email:
-                return {'message': f'Must provide an email'}, 404
+                return {'message': f'Must provide an email'}, 400
 
             group = Group.get(id=group_id)
 
@@ -44,8 +45,3 @@ class InviteMemberResource(Resource):
 
         except Exception as ex:
             return {'message': 'An internal service error occurred', 'error': str(ex)}, 500
-
-    def get(self):
-        # create a link to share the group_id & let any user join
-        # group id
-        pass
