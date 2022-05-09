@@ -33,13 +33,11 @@ class InviteMemberResource(Resource):
             if not args.email:
                 return {'message': f'Must provide an email'}, 404
 
-            # get group name? (user who invited them also?) & pass along to email
+            group = Group.get(id=group_id)
 
-            # make 2 join links:
-            # Make new account -> go to signup resource, passing (optional) group_id
-            # Already have an account -> add to group resource, passing group_id
+            # TODO: handle link to signup/login resource passing group_id, & adding user to group once signed in
 
-            msg = EmailInviteMessage(group_id, args.email)
+            msg = EmailInviteMessage(group_id, args.email, group.name)
             send_email(msg)
 
             return {'Sent invite email to: ': str(args.email)}, 200
