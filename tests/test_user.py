@@ -1,15 +1,15 @@
 from faker import Faker
 from database.models import User
 from database.database import session
-from parameterized import parameterized
-from pytest import fixture
-from tests.conftest import db_session
+# from parameterized import parameterized
+# from pytest import fixture
+# # from tests.conftest import db_session
 
 faker = Faker()
 
 
 class Test_User:
-    def test_create_user(self, db_session):
+    def test_create_user(self, test_db):
         """
         create user object
         get new object id from database
@@ -23,9 +23,8 @@ class Test_User:
         new_user_id = User.create(email=email,
                                   first_name=first_name,
                                   last_name=last_name,
-                                  password=password,
-                                  session=db_session)
-        new_user = db_session.query(User).filter_by(id=new_user_id).first()
+                                  password=password)
+        new_user = session.query(User).filter_by(id=new_user_id).first()
 
         assert new_user
         assert new_user.email == email
@@ -38,7 +37,7 @@ class Test_User:
         assert not new_user.items
         assert not new_user.confirmed_on
 
-    def test_user_exists(self, db_session):
+    def test_user_exists(self, test_db):
         """
         create user object
         check that user exists
@@ -54,10 +53,10 @@ class Test_User:
                     last_name=last_name,
                     password=password)
 
-        db_session.add(user)
-        db_session.commit()
+        session.add(user)
+        session.commit()
 
-        assert User.exists(user.id, db_session)
+        assert User.exists(user.id)
 
 
 # update

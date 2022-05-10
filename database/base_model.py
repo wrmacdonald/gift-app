@@ -10,7 +10,7 @@ class DatabaseActionException(Exception):
 
 class BaseModel:
     @classmethod
-    def exists(cls, id: int, session=session()) -> bool:
+    def exists(cls, id: int) -> bool:
         """
         params: id - id of row
         returns true if row exists in database and false if it doesn't exist
@@ -22,7 +22,7 @@ class BaseModel:
             raise DatabaseActionException(ex)
 
     @classmethod
-    def create(cls, session, **kwargs) -> int:
+    def create(cls, **kwargs) -> int:
         """
         params: kwargs - dictionary of any number of variables
         creates new instance of object and saves it to the database
@@ -30,7 +30,7 @@ class BaseModel:
         """
         obj = cls(**kwargs)
         log.debug(f'saving new {cls} with id {obj.id} to the database')
-        obj.save(session)
+        obj.save()
         return obj.id
 
     @classmethod
@@ -86,7 +86,7 @@ class BaseModel:
             log.error(str(ex))
             raise DatabaseActionException(ex)
 
-    def save(self, session=session()):
+    def save(self):
         """save to database"""
         try:
             session.add(self)

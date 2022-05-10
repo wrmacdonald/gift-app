@@ -1,34 +1,25 @@
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
+import os
 from config import Config
 
+Config.MODE = 'TEST'
 
-@pytest.fixture(scope='session')
-def db_engine(request):
-    """yields a SQLAlchemy engine which is suppressed after the test session"""
-    engine_ = create_engine(Config.DB_HOST, echo=True)
-
-    yield engine_
-
-    engine_.dispose()
+from database.database import init_db
 
 
 @pytest.fixture(scope='session')
-def db_session_factory(db_engine):
-    """returns a SQLAlchemy scoped session factory"""
-    return scoped_session(sessionmaker(bind=db_engine))
+def test_db():
+    """
+    creates a test in-memory db
+    yields to tests
+    then deletes the database
+    """
+    init_db()
 
+    yield
 
-@pytest.fixture(scope='function')
-def db_session(db_session_factory):
-    """yields a SQLAlchemy connection which is rollbacked after the test"""
-    session_ = db_session_factory()
-    print("starting session")
+    _db = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'test.db')
+    if os.path.exists(_db):
+        os.remove(_db)
 
-    yield session_
-
-    session_.rollback()
-    session_.close()
-    print("rolling back and closing session")
 
