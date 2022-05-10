@@ -6,7 +6,11 @@ from config import Config
 
 log = logging.getLogger(__name__)
 
-engine = create_engine(Config.DB_HOST)
+if Config.MODE == 'TEST':
+    engine = create_engine(Config.TEST_DB_HOST)
+else:
+    engine = create_engine(Config.DB_HOST)
+
 session = scoped_session(sessionmaker(autocommit=False,
                                       autoflush=False,
                                       bind=engine))
