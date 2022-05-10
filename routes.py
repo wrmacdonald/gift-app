@@ -4,7 +4,7 @@ from resources.group import GroupResource, GroupMembersResource
 from resources.auth import Signup, Login
 from resources.confirmation import EmailConfirmation
 from resources.list import ListResource, ListItemResource
-
+from resources.invitation import InviteMemberResource
 
 
 def initialize_routes(api):
@@ -17,4 +17,4 @@ def initialize_routes(api):
      api.add_resource(EmailConfirmation, '/api/confirm-email/<string:token>')
      api.add_resource(ListResource, '/api/lists')
      api.add_resource(ListItemResource, '/api/lists/<int:list_id>/items')
-     # api.add_resource(InviteMemberResource, '/api/groups/<group_id:int>/InviteMembers')
+     api.add_resource(InviteMemberResource, '/api/groups/<int:group_id>/invite')

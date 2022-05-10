@@ -8,5 +8,3 @@ def send_email(msg):
     with smtplib.SMTP_SSL(Config.MAIL_SERVER, Config.MAIL_PORT) as smpt:
         smpt.login(Config.MAIL_USERNAME, Config.MAIL_PASSWORD)
         smpt.send_message(msg)
-
-
