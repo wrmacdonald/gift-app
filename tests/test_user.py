@@ -4,6 +4,7 @@ from faker import Faker
 from database.models import User
 from database.database import session
 from config import Config
+from tests.fake_data import FakeUserInfo
 
 faker = Faker()
 
@@ -17,22 +18,15 @@ class TestUser:
         get new object id from database
         check that user exists
         """
-        first_name = faker.first_name()
-        last_name = faker.last_name()
-        email = faker.email()
-        password = faker.password()
-
-        new_user_id = User.create(email=email,
-                                  first_name=first_name,
-                                  last_name=last_name,
-                                  password=password)
+        user_data = FakeUserInfo()
+        new_user_id = User.create(**user_data.to_dict())
         new_user = session.query(User).filter_by(id=new_user_id).first()
 
         assert new_user
-        assert new_user.email == email
-        assert new_user.first_name == first_name
-        assert new_user.last_name == last_name
-        assert new_user.password == password
+        assert new_user.email == user_data.email
+        assert new_user.first_name == user_data.first_name
+        assert new_user.last_name == user_data.last_name
+        assert new_user.password == user_data.password
         assert not new_user.confirmed
         assert not new_user.lists
         assert not new_user.groups
@@ -46,15 +40,8 @@ class TestUser:
         check that user exists
         """
 
-        first_name = faker.first_name()
-        last_name = faker.last_name()
-        email = faker.email()
-        password = faker.password()
-
-        user = User(email=email,
-                    first_name=first_name,
-                    last_name=last_name,
-                    password=password)
+        user_data = FakeUserInfo()
+        user = User(**user_data.to_dict())
 
         session.add(user)
         session.commit()
@@ -75,24 +62,18 @@ class TestUser:
         """
         create user and test that it can be retrieved via get
         """
-        first_name = faker.first_name()
-        last_name = faker.last_name()
-        email = faker.email()
-        password = faker.password()
 
-        user = User(email=email,
-                    first_name=first_name,
-                    last_name=last_name,
-                    password=password)
+        user_data = FakeUserInfo()
+        user = User(**user_data.to_dict())
 
         session.add(user)
         session.commit()
 
         retrieved_user = User.get(id=user.id)
-        assert retrieved_user.email == email
-        assert retrieved_user.first_name == first_name
-        assert retrieved_user.last_name == last_name
-        assert retrieved_user.password == password
+        assert retrieved_user.email == user_data.email
+        assert retrieved_user.first_name == user_data.first_name
+        assert retrieved_user.last_name == user_data.last_name
+        assert retrieved_user.password == user_data.password
 
     @pytest.mark.parametrize('exec_number', range(Config.NUM_TEST_EXECUTIONS))
     def test_get_all_users(self, test_db, exec_number):
@@ -106,15 +87,9 @@ class TestUser:
 
         num_users = random.randint(0, 10)
         for i in range(num_users):
-            first_name = faker.first_name()
-            last_name = faker.last_name()
-            email = faker.email()
-            password = faker.password()
 
-            user = User(email=email,
-                        first_name=first_name,
-                        last_name=last_name,
-                        password=password)
+            user_data = FakeUserInfo()
+            user = User(**user_data.to_dict())
 
             session.add(user)
             session.commit()
@@ -138,15 +113,9 @@ class TestUser:
         """
         create user, update the user to new val, and then retrieve it from the db.
         """
-        first_name = faker.first_name()
-        last_name = faker.last_name()
-        email = faker.email()
-        password = faker.password()
 
-        user = User(email=email,
-                    first_name=first_name,
-                    last_name=last_name,
-                    password=password)
+        user_data = FakeUserInfo()
+        user = User(**user_data.to_dict())
 
         session.add(user)
         session.commit()
@@ -182,15 +151,9 @@ class TestUser:
         """
         create user, delete it, & test that it does not exist
         """
-        first_name = faker.first_name()
-        last_name = faker.last_name()
-        email = faker.email()
-        password = faker.password()
 
-        user = User(email=email,
-                    first_name=first_name,
-                    last_name=last_name,
-                    password=password)
+        user_data = FakeUserInfo()
+        user = User(**user_data.to_dict())
 
         session.add(user)
         session.commit()
