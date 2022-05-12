@@ -21,5 +21,3 @@ def test_db():
     _db = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'test.db')
     if os.path.exists(_db):
         os.remove(_db)
-
-
