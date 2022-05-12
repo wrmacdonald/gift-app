@@ -1,13 +1,17 @@
 import pytest
+import random
 from faker import Faker
 from database.models import User
 from database.database import session
+from config import Config
 
 faker = Faker()
 
 
 class TestUser:
-    def test_create_user(self, test_db):
+
+    @pytest.mark.parametrize('exec_number', range(Config.NUM_TEST_EXECUTIONS))
+    def test_create_user(self, test_db, exec_number):
         """
         create user object
         get new object id from database
@@ -35,7 +39,8 @@ class TestUser:
         assert not new_user.items
         assert not new_user.confirmed_on
 
-    def test_user_exists(self, test_db):
+    @pytest.mark.parametrize('exec_number', range(Config.NUM_TEST_EXECUTIONS))
+    def test_user_exists(self, test_db, exec_number):
         """
         create user object
         check that user exists
@@ -56,15 +61,17 @@ class TestUser:
 
         assert User.exists(user.id)
 
-    def test_user_not_exist(self, test_db):
+    @pytest.mark.parametrize('exec_number', range(Config.NUM_TEST_EXECUTIONS))
+    def test_user_not_exist(self, test_db, exec_number):
         """
         check that user_id 5000 does not exist
         """
-        id = 5000
+        id = random.randint(1, 100000)
 
         assert not User.exists(id)
 
-    def test_get_user(self, test_db):
+    @pytest.mark.parametrize('exec_number', range(Config.NUM_TEST_EXECUTIONS))
+    def test_get_user(self, test_db, exec_number):
         """
         create user and test that it can be retrieved via get
         """
@@ -87,7 +94,8 @@ class TestUser:
         assert retrieved_user.last_name == last_name
         assert retrieved_user.password == password
 
-    def test_get_all_users(self, test_db):
+    @pytest.mark.parametrize('exec_number', range(Config.NUM_TEST_EXECUTIONS))
+    def test_get_all_users(self, test_db, exec_number):
         """
         delete all rows in User table
         create num_users and then get them all from db.
@@ -96,7 +104,7 @@ class TestUser:
         session.query(User).delete()
         session.commit()
 
-        num_users = 10
+        num_users = random.randint(0, 10)
         for i in range(num_users):
             first_name = faker.first_name()
             last_name = faker.last_name()
@@ -115,7 +123,18 @@ class TestUser:
 
         assert len(users) == num_users
 
-    def test_update_user_1(self, test_db):
+    @pytest.mark.parametrize('update_info', [{'email': faker.email()},
+                                             {'first_name': faker.first_name()},
+                                             {'last_name': faker.last_name()},
+                                             {'password': faker.password()},
+                                             {'first_name': faker.first_name(),
+                                              'last_name': faker.last_name()},
+                                             {'email': faker.email(),
+                                              'first_name': faker.first_name(),
+                                              'last_name': faker.last_name(),
+                                              'password': faker.password()}
+                                             ])
+    def test_update_user(self, test_db, update_info):
         """
         create user, update the user to new val, and then retrieve it from the db.
         """
@@ -132,130 +151,34 @@ class TestUser:
         session.add(user)
         session.commit()
 
-        new_email = faker.email()
-        new_user = {'email': new_email}
+        updated_user = User.update(id=user.id,
+                                   email=update_info.get('email'),
+                                   first_name=update_info.get('last_name'),
+                                   last_name=update_info.get('last_name'),
+                                   password=update_info.get('password'))
 
-        updated_user = User.update(id=user.id, **new_user)
+        if update_info.get('email'):
+            assert updated_user.email == update_info['email']
+        else:
+            assert updated_user.email == user.email
 
-        assert updated_user.email == new_email
-        assert updated_user.first_name == first_name
-        assert updated_user.last_name == last_name
-        assert updated_user.password == password
+        if update_info.get('fist_name'):
+            assert updated_user.first_name == update_info['fist_name']
+        else:
+            assert updated_user.first_name == user.first_name
 
-    def test_update_user_2(self, test_db):
-        """
-        create user, update the user to new val, and then retrieve it from the db.
-        """
-        first_name = faker.first_name()
-        last_name = faker.last_name()
-        email = faker.email()
-        password = faker.password()
+        if update_info.get('last_name'):
+            assert updated_user.last_name == update_info['last_name']
+        else:
+            assert updated_user.last_name == user.last_name
 
-        user = User(email=email,
-                    first_name=first_name,
-                    last_name=last_name,
-                    password=password)
+        if update_info.get('password'):
+            assert updated_user.password == update_info['password']
+        else:
+            assert updated_user.password == user.password
 
-        session.add(user)
-        session.commit()
-
-        new_first_name = faker.first_name()
-        new_user = {'first_name': new_first_name}
-
-        updated_user = User.update(id=user.id, **new_user)
-
-        assert updated_user.email == email
-        assert updated_user.first_name == new_first_name
-        assert updated_user.last_name == last_name
-        assert updated_user.password == password
-
-    def test_update_user_3(self, test_db):
-        """
-        create user, update the user to new val, and then retrieve it from the db.
-        """
-        first_name = faker.first_name()
-        last_name = faker.last_name()
-        email = faker.email()
-        password = faker.password()
-
-        user = User(email=email,
-                    first_name=first_name,
-                    last_name=last_name,
-                    password=password)
-
-        session.add(user)
-        session.commit()
-
-        new_password = faker.password()
-        new_user = {'password': new_password}
-
-        updated_user = User.update(id=user.id, **new_user)
-
-        assert updated_user.email == email
-        assert updated_user.first_name == first_name
-        assert updated_user.last_name == last_name
-        assert updated_user.password == new_password
-
-    def test_update_user_4(self, test_db):
-        """
-        create user, update the user to new val, and then retrieve it from the db.
-        """
-        first_name = faker.first_name()
-        last_name = faker.last_name()
-        email = faker.email()
-        password = faker.password()
-
-        user = User(email=email,
-                    first_name=first_name,
-                    last_name=last_name,
-                    password=password)
-
-        session.add(user)
-        session.commit()
-
-        new_first_name = faker.first_name()
-        new_last_name = faker.last_name()
-        new_user = {'first_name': new_first_name, 'last_name': new_last_name}
-
-        updated_user = User.update(id=user.id, **new_user)
-
-        assert updated_user.email == email
-        assert updated_user.first_name == new_first_name
-        assert updated_user.last_name == new_last_name
-        assert updated_user.password == password
-
-    def test_update_user_5(self, test_db):
-        """
-        create user, update the user to new val, and then retrieve it from the db.
-        """
-        first_name = faker.first_name()
-        last_name = faker.last_name()
-        email = faker.email()
-        password = faker.password()
-
-        user = User(email=email,
-                    first_name=first_name,
-                    last_name=last_name,
-                    password=password)
-
-        session.add(user)
-        session.commit()
-
-        new_email = faker.email()
-        new_first_name = faker.first_name()
-        new_last_name = faker.last_name()
-        new_password = faker.password()
-        new_user = {'email': new_email, 'first_name': new_first_name,
-                    'last_name': new_last_name, 'password': new_password}
-
-        updated_user = User.update(id=user.id, **new_user)
-
-        assert updated_user.email == new_email
-        assert updated_user.first_name == new_first_name
-        assert updated_user.last_name == new_last_name
-        assert updated_user.password == new_password
-
-    def test_delete_user(self, test_db):
+    @pytest.mark.parametrize('exec_number', range(Config.NUM_TEST_EXECUTIONS))
+    def test_delete_user(self, test_db, exec_number):
         """
         create user, delete it, & test that it does not exist
         """

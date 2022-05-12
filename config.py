@@ -31,7 +31,8 @@ class Config:
     # mail accounts
     MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER')
 
-
+    # testing
+    NUM_TEST_EXECUTIONS = 3
 
 
 if __name__ == '__main__':
