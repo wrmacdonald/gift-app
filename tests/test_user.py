@@ -53,6 +53,9 @@ class TestUser:
         """
         check that user_id 5000 does not exist
         """
+        session.query(User).delete()
+        session.commit()
+
         id = random.randint(1, 100000)
 
         assert not User.exists(id)
