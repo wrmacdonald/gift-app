@@ -1,4 +1,7 @@
 import logging
+
+from typing import List
+
 from database.database import session
 
 log = logging.getLogger(__name__)
@@ -34,7 +37,7 @@ class BaseModel:
         return obj.id
 
     @classmethod
-    def get_all(cls, **kwargs) -> list[object]:
+    def get_all(cls, **kwargs) -> List[object]:
         """
         returns list of all rows in the database that match kwargs
         if no arguments are given, returns all instances
